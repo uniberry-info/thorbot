@@ -11,6 +11,10 @@ royalnet = {git = "https://github.com/Steffo99/royalnet-6"}
 telethon = "^1.16.4"
 cryptg = {version = "^0.2.post1", optional = true}
 aiohttp = "^3.6.2"
+flask = "^1.1.2"
+authlib = "^0.14.3"
+flask-sqlalchemy = "^2.4.4"
+requests = "^2.24.0"
 
 [tool.poetry.dev-dependencies]
 

@@ -21,7 +21,7 @@ async def main():
 
     log.info("Starting Alchemist...")
     alchemist: royalnet.alchemist.Alchemist = royalnet.alchemist.Alchemist(
-        engine_args=[os.environ["SQLALCHEMY_ENGINE"]],
+        engine_args=[os.environ["SQLALCHEMY_DATABASE_URI"]],
         engine_kwargs={}
     )
     log.debug("Mapping database tables...")
