@@ -47,9 +47,9 @@ def page_authorize():
     db.session.commit()
 
     state = serializer.dumps(new_student.email)
-    return flask.redirect(f"https://t.me/{app.config['TELEGRAM_BOT_USERNAME']}?start={state}")
+    return flask.redirect(f"https://t.me/{app.config['TELEGRAM_BOT_USERNAME']}?start=register:{state}")
 
 
 if __name__ == "__main__":
     db.create_all()
-    app.run(port=30008)
+    app.run()
