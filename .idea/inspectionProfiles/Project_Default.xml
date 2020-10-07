@@ -1,0 +1,64 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="DuplicatedCode" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyCompatibilityInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ourVersions">
+        <value>
+          <list size="2">
+            <item index="0" class="java.lang.String" itemvalue="3.8" />
+            <item index="1" class="java.lang.String" itemvalue="3.9" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="2">
+            <item index="0" class="java.lang.String" itemvalue="coloredlogs" />
+            <item index="1" class="java.lang.String" itemvalue="telegram" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N806" />
+          <option value="N802" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="royalnet.backpack.tables.users.User.osu" />
+          <option value="royalnet.commands.commanddata.CommandData.message" />
+          <option value="sqlalchemy.ext.declarative.api.DeclarativeMeta.generate" />
+          <option value="sqlalchemy.ext.declarative.api.DeclarativeMeta.user" />
+          <option value="sqlalchemy.ext.declarative.api.DeclarativeMeta.expiration" />
+          <option value="royalnet.backpack.tables.users.User.steam" />
+          <option value="royalpack.tables.steam.Steam.brawlhalla" />
+          <option value="sqlalchemy.ext.declarative.api.DeclarativeMeta.*" />
+          <option value="steam.webapi.WebAPI.*" />
+          <option value="royalnet.backpack.tables.users.User.trivia_score" />
+          <option value="royalnet.backpack.tables.users.User.fiorygi" />
+          <option value="royalnet.backpack.tables.users.User.bio" />
+          <option value="royalpack.tables.mmevents.MMEvent.responses" />
+          <option value="royalpack.tables.steam.Steam.dota" />
+          <option value="royalnet.backpack.tables.users.User.leagueoflegends" />
+          <option value="database.User.transactions" />
+          <option value="royalnet.backpack.tables.users.User.halloween2020" />
+          <option value="royalpack.tables.steam.Steam.halloween2020" />
+          <option value="royalpack.tables.steam.Steam.trionfistatus" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">
+      <option name="processCode" value="true" />
+      <option name="processLiterals" value="true" />
+      <option name="processComments" value="true" />
+    </inspection_tool>
+  </profile>
+</component>
