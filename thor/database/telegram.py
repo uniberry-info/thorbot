@@ -9,7 +9,6 @@ class Telegram(Base):
     """
     __tablename__ = "telegram"
 
-    # Telegram fields
     id = s.Column(s.BigInteger, primary_key=True)
     first_name = s.Column(s.String, nullable=False)
     last_name = s.Column(s.String)

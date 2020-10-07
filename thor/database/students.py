@@ -9,12 +9,11 @@ class Student(Base):
     """
     __tablename__ = "students"
 
-    # Student personal data fields
-    id = s.Column(s.Integer, primary_key=True)  # "Matricola"
-    first_name = s.Column(s.String)
-    last_name = s.Column(s.String)
+    email = s.Column(s.String, nullable=False, primary_key=True)
+    first_name = s.Column(s.String, nullable=False)
+    last_name = s.Column(s.String, nullable=False)
 
-    privacy = s.Column(s.Boolean, server_default="TRUE")
+    privacy = s.Column(s.Boolean, nullable=False, default=True, server_default="TRUE")
     """Whether or not the student has requested to keep his data hidden."""
 
     ac = o.relationship("Account", back_populates="st")
