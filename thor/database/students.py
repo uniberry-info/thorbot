@@ -9,7 +9,7 @@ class Student(Base):
     """
     __tablename__ = "students"
 
-    email = s.Column(s.String, nullable=False, primary_key=True)
+    email_prefix = s.Column(s.String, nullable=False, primary_key=True)
     first_name = s.Column(s.String, nullable=False)
     last_name = s.Column(s.String, nullable=False)
 
@@ -17,3 +17,6 @@ class Student(Base):
     """Whether or not the student has requested to keep his data hidden."""
 
     ac = o.relationship("Account", back_populates="st")
+
+    def email(self):
+        return f"{self.email_prefix}@studenti.unimore.it"

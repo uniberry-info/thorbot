@@ -4,6 +4,7 @@ import flask_sqlalchemy
 import authlib.integrations.flask_client
 import os
 import itsdangerous.url_safe
+import re
 from .database.base import Base
 from .database import Student
 
@@ -35,19 +36,30 @@ def page_login():
 def page_authorize():
     token = oauth.google.authorize_access_token()
     userinfo = oauth.google.parse_id_token(token=token)
-    if not (userinfo.email_verified and userinfo.email.endswith("@studenti.unimore.it")):
-        return flask.abort(403)
 
-    new_student = Student(
-        email=userinfo.email,
-        first_name=userinfo.given_name,
-        last_name=userinfo.family_name
-    )
-    db.session.add(new_student)
+    if not userinfo.email_verified:
+        return flask.abort(403)
+    email_prefix_match = re.match(r"(.+)@studenti\.unimore\.it", userinfo.email)
+    if not email_prefix_match:
+        return flask.abort(403)
+    email_prefix = email_prefix_match.group(1)
+
+    student: Optional[Student] = db.session.query(Student).filter_by(email_prefix=email_prefix).one_or_none()
+    if student is None:
+        student = Student(
+            email_prefix=email_prefix,
+            first_name=userinfo.given_name,
+            last_name=userinfo.family_name
+        )
+        db.session.add(student)
+    else:
+        student.first_name = userinfo.given_name
+        student.last_name = userinfo.family_name
     db.session.commit()
 
-    state = serializer.dumps(new_student.email)
-    return flask.redirect(f"https://t.me/{app.config['TELEGRAM_BOT_USERNAME']}?start=register:{state}")
+    state = serializer.dumps(student.email_prefix)
+    state = state.replace("_", "__").replace(".", "_")
+    return flask.redirect(f"https://t.me/{app.config['TELEGRAM_BOT_USERNAME']}?start=R_{state}")
 
 
 if __name__ == "__main__":

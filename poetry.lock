@@ -271,7 +271,7 @@ sqlalchemy = "^1.3.19"
 
 [package.source]
 url = "https://github.com/Steffo99/royalnet-6"
-reference = "a531e878f3d900c9cbbf658bf679cc5262f12136"
+reference = "e0c482358c47cdf7807541d045a8e54a6ba250c8"
 type = "git"
 
 [[package]]
