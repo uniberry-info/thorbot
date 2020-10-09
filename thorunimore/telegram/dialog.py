@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 
 import royalnet.campaigns
 import sqlalchemy.orm
@@ -16,6 +17,9 @@ from ..deeplinking import DeepLinking
 
 log = logging.getLogger(__name__)
 dl = DeepLinking(os.environ["SECRET_KEY"])
+
+
+email_regex = re.compile(r"^([0-9]+)(?:@studenti\.unimore\.it)?$")
 
 
 class Dialog:
@@ -48,7 +52,13 @@ class Dialog:
 
     async def __message(self, msg, **kwargs):
         """Send a message to the specified entity."""
-        return await self.bot.send_message(entity=self.entity, parse_mode="HTML", message=msg, **kwargs)
+        return await self.bot.send_message(
+            entity=self.entity,
+            parse_mode="HTML",
+            message=msg,
+            buttons=self.bot.build_reply_markup(telethon.tl.custom.Button.clear()),
+            **kwargs
+        )
 
     async def __first(self) -> AsyncAdventure:
         """The generator which chooses the first dialog."""
@@ -63,18 +73,21 @@ class Dialog:
                 if msg.is_private:
                     yield self.__start()
                 else:
-                    await self.__message(f"⚠️ Questo comando funziona solo in chat privata (@"
-                                         f"{os.environ['TELEGRAM_BOT_USERNAME']}).")
+                    await self.__message(
+                        f"⚠️ Questo comando funziona solo in chat privata (@{os.environ['TELEGRAM_BOT_USERNAME']})."
+                    )
 
             elif text.startswith("/privacy"):
                 if msg.is_private:
                     yield self.__privacy()
                 else:
-                    await self.__message(f"⚠️ Questo comando funziona solo in chat privata (@"
-                                         f"{os.environ['TELEGRAM_BOT_USERNAME']}).")
+                    await self.__message(
+                        f"⚠️ Questo comando funziona solo in chat privata (@{os.environ['TELEGRAM_BOT_USERNAME']})."
+                    )
 
     async def __start(self):
         msg: telethon.tl.custom.Message = yield
+
         text: str = msg.message
 
         # Check whether this is a normal start or a deep-linked one
@@ -86,15 +99,17 @@ class Dialog:
 
     async def __normal_start(self):
         msg: telethon.tl.custom.Message = yield
+
         await self.__message(
-            '👋 Ciao! Sono Thor, il bot-moderatore di Unimore Informatica.\n\n'
-            'Per entrare nel gruppo devi <a href="https://thor.steffo.eu/">effettuare la verifica '
-            'dell\'identità facendo il login qui con il tuo account Unimore</a>.\n\n'
-            'Se hai bisogno di aiuto, manda un messaggio a @Steffo.'
+            f'👋 Ciao! Sono Thor, il bot-moderatore di Unimore Informatica.\n\n'
+            f'Per entrare nel gruppo devi <a href="{os.environ["BASE_URL"]}/">effettuare la verifica '
+            f'dell\'identità facendo il login qui con il tuo account Unimore</a>.\n\n'
+            f'Se hai bisogno di aiuto, manda un messaggio a @Steffo.'
         )
 
     async def __deeplink_start(self, payload: str):
         msg: telethon.tl.custom.Message = yield
+
         opcode, data = dl.decode(payload)
 
         # R: Register new account
@@ -103,23 +118,27 @@ class Dialog:
 
     async def __register(self, email_prefix: str) -> AsyncAdventure:
         msg: telethon.tl.custom.Message = yield
+
         from_user = await msg.get_sender()
 
         tg: Telegram = self.session.query(Telegram).filter_by(id=from_user.id).one_or_none()
         st: Student = self.session.query(Student).filter_by(email_prefix=email_prefix).one()
 
         # Check if the user is already registered
-        if tg is not None:
-            if tg.st == st:
-                await self.__message(
-                    f'⭐️ Hai già effettuato la verifica dell\'identità.\n\n'
-                    f'<a href="https://t.me/joinchat/AYAGH08KHLjBe1QbxNHLwA">Entra nel gruppo cliccando '
-                    f'qui!</a>'
-                )
-            else:
-                await self.__message(
-                    f"⚠️ Questo account Telegram è già connesso a <b>{tg.st.first_name} {tg.st.last_name}"
-                    f"</b>.\n\n")
+        if tg.st == st:
+            await self.__message(
+                f'⭐️ Hai già effettuato la verifica dell\'identità.\n\n'
+                f'<a href="{os.environ["GROUP_URL"]}">Entra nel gruppo cliccando '
+                f'qui!</a>'
+            )
+            return
+
+        # Check if the account is connected to someone else
+        elif tg is not None:
+            await self.__message(
+                f"⚠️ Questo account Telegram è già connesso a <b>{tg.st.first_name} {tg.st.last_name}"
+                f"</b>.\n\n"
+            )
             return
 
         # Ask for confirmation
@@ -128,14 +147,17 @@ class Dialog:
             choices=[["✅ Sì!", "❌ No."]]
         )
         if choice.message == "❌ No.":
-            await self.__message("↩️ Allora effettua il logout da tutti gli account Google sul tuo browser, "
-                                 "poi riprova!")
+            await self.__message(
+                "↩️ Effettua il logout da tutti gli account Google sul tuo browser, poi ri-invia il comando /start!"
+            )
             return
 
         # Ask for privacy mode
         choice = yield Keyboard(
-            message="📝 Vuoi aggiungere il tuo nome e la tua email alla rubrica del gruppo?\n\n"
-                    "Questo li renderà visibili a tutti gli altri membri verificati.\n\n"
+            message="📝 Vuoi aggiungere il tuo nome e la tua email alla rubrica del gruppo?\n"
+                    "\n"
+                    "Questo li renderà visibili a tutti gli altri membri verificati.\n"
+                    "\n"
                     "(Gli amministratori del gruppo vi avranno comunque accesso, e potrai cambiare idea in qualsiasi "
                     "momento con il comando /privacy.)",
             choices=[["✅ Sì!", "❌ No."]]
@@ -151,27 +173,30 @@ class Dialog:
             privacy=privacy,
             st=st,
         )
-        # Set the privacy mode
-        st.privacy = privacy
 
         # Commit the SQLAlchemy session
         self.session.add(tg)
         self.session.commit()
 
         # Send the link to the group
-        await self.__message('✨ Hai completato la verifica dell\'identità.\n\n'
-                             '<a href="https://t.me/joinchat/AYAGH08KHLjBe1QbxNHLwA">Entra nel gruppo cliccando '
-                             'qui!</a>', buttons=self.bot.build_reply_markup(telethon.tl.custom.Button.clear()))
+        await self.__message(
+            f'✨ Hai completato la verifica dell\'identità.\n\n'
+            f'<a href="{os.environ["GROUP_URL"]}">Entra nel gruppo cliccando qui!</a>'
+        )
         return
 
     async def __privacy(self):
         msg: telethon.tl.custom.Message = yield
+
         from_user = await msg.get_sender()
 
         tg: Telegram = self.session.query(Telegram).filter_by(id=from_user.id).one_or_none()
         if tg is None:
-            await self.__message("⚠️ Non hai ancora effettuato la verifica dell'account!\n\n"
-                                 "Usa /start per iniziare!")
+            await self.__message(
+                "⚠️ Non hai ancora effettuato la verifica dell'account!\n"
+                "\n"
+                "Invia /start per iniziare!"
+            )
             return
 
         # Ask for privacy mode
@@ -193,21 +218,21 @@ class Dialog:
     async def __whois(self, text: str):
         msg: telethon.tl.custom.Message = yield
 
+        cmd, *args = text.split(" ", 1)
+        args = " ".join(args)
+
         # Email
-        if "@" in text[1:]:
-            text, _ = text.split("@")
-        try:
-            int(text)
-        except ValueError:
-            # First and last name
-            if " " in text:
-                yield self.__whois_real_name(text=text)
-            # Username
-            else:
-                username = text.lstrip("@")
-                yield self.__whois_username(username=username)
-        else:
-            yield self.__whois_email(email_prefix=text)
+        if match := re.match(email_regex, args):
+            email_prefix = match.group(1)
+            yield self.__whois_email(email_prefix=email_prefix)
+
+        # Real name
+        elif " " in args:
+            yield self.__whois_real_name(name=args)
+
+        elif args.startswith("@"):
+            username = args.lstrip("@")
+            yield self.__whois_username(username=username)
 
         await self.__message(
             "⚠️ Non hai specificato correttamente cosa cercare.\n"
@@ -215,19 +240,20 @@ class Dialog:
             "Puoi specificare un'username Telegram, un nome e cognome o un'email."
         )
 
-    async def __whois_email(self, email_prefix: int):
+    async def __whois_email(self, email_prefix: str):
         msg: telethon.tl.custom.Message = yield
 
         result = self.session.query(Student).filter_by(email_prefix=email_prefix).one_or_none()
         if result is None:
             await self.__message("⚠️ Nessuno studente trovato.")
         elif result.tg.privacy:
-            await self.__message("👤 Lo studente è registrato, ma ha deciso di manterere privati i dettagli del suo "
-                                 "account.")
+            await self.__message(
+                "👤 Lo studente è registrato, ma ha deciso di manterere privati i dettagli del suo account."
+            )
         else:
             await self.__message(result.message())
 
-    async def __whois_real_name(self, text: str):
+    async def __whois_real_name(self, name: str):
         msg: telethon.tl.custom.Message = yield
 
         sq = (
@@ -241,7 +267,7 @@ class Dialog:
         result = (
             self.session
             .query(sq)
-            .filter_by(full_name=text.upper())
+            .filter_by(full_name=name.upper())
             .all()
         )
 
@@ -258,8 +284,10 @@ class Dialog:
                 continue
             response.append(student.message())
         if hidden:
-            response.append("👤 Almeno uno studente ottenuto dalla ricerca è registrato, ma ha deciso di mantenere "
-                            "privati i dettagli del suo account.")
+            response.append(
+                "👤 Almeno uno studente ottenuto dalla ricerca è registrato, ma ha deciso di mantenere privati i "
+                "dettagli del suo account."
+            )
 
         await self.__message("\n\n".join(response))
 
@@ -270,7 +298,8 @@ class Dialog:
         if result is None:
             await self.__message("⚠️ Nessuno studente trovato.")
         elif result.privacy:
-            await self.__message("👤 Lo studente è registrato, ma ha deciso di manterere privati i dettagli del suo "
-                                 "account.")
+            await self.__message(
+                "👤 Lo studente è registrato, ma ha deciso di manterere privati i dettagli del suo account."
+            )
         else:
             await self.__message(result.st.message())

@@ -62,6 +62,12 @@ async def main():
             await menu.next(msg)
         except StopAsyncIteration:
             del menus[msg.chat_id]
+        except Exception as e:
+            log.error(f"{e}")
+            bot.send_message(entity=msg.chat,
+                             message="☢️ Si è verificato un errore critico e la conversazione è stata annullata.\n"
+                                     "\n"
+                                     "L'errore è stato salvato nei log del server.")
 
     while True:
         log.info(f"Catching up...")
