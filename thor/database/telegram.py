@@ -14,4 +14,5 @@ class Telegram(Base):
     last_name = s.Column(s.String)
     username = s.Column(s.String)
 
-    ac = o.relationship("Account", back_populates="tg")
+    st_email_prefix = s.Column(s.String, s.ForeignKey("students.email_prefix"), nullable=False)
+    st = o.relationship("Student", back_populates="tg", uselist=False)

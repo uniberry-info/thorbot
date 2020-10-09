@@ -16,7 +16,7 @@ class Student(Base):
     privacy = s.Column(s.Boolean, nullable=False, default=True, server_default="TRUE")
     """Whether or not the student has requested to keep his data hidden."""
 
-    ac = o.relationship("Account", back_populates="st")
+    tg = o.relationship("Telegram", back_populates="st")
 
     def email(self):
         return f"{self.email_prefix}@studenti.unimore.it"
