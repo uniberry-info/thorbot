@@ -5,7 +5,7 @@ import sqlalchemy.orm as o
 
 class Student(Base):
     """
-    A table that contains data related to an authenticated university student.
+    A table that contains data related to the first step of the student verification process (Google sign in).
     """
     __tablename__ = "students"
 
@@ -13,10 +13,13 @@ class Student(Base):
     first_name = s.Column(s.String, nullable=False)
     last_name = s.Column(s.String, nullable=False)
 
-    privacy = s.Column(s.Boolean, nullable=False, default=True, server_default="TRUE")
-    """Whether or not the student has requested to keep his data hidden."""
-
-    tg = o.relationship("Telegram", back_populates="st")
+    tg = o.relationship("Telegram", back_populates="st", uselist=False)
 
     def email(self):
         return f"{self.email_prefix}@studenti.unimore.it"
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} <{self.email()}>"
+
+    def __repr__(self):
+        return f"{self.__qualname__}({self.email_prefix=}, {self.first_name=}, {self.last_name=})"

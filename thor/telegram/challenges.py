@@ -61,7 +61,7 @@ class UnrestrictedKeyboard(Question):
         for row in self.choices:
             new_row = []
             for choice in row:
-                new_row.append(telethon.Button.text(choice))
+                new_row.append(telethon.Button.text(choice, single_use=True))
             new_rows.append(new_row)
         return new_rows
 
