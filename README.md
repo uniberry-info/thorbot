@@ -61,6 +61,16 @@ A moderator bot for the Unimore Informatica group
      LOG_LEVEL=DEBUG
      LOG_FORMAT={asctime}\t| {name}\t| {message}
      ```
+   
+   - The url at which web is hosted
+     ```bash
+     BASE_URL=http://lo.steffo.eu:30008
+     ```
+     
+   - The url to join the Telegram group
+     ```bash
+     GROUP_URL=https://t.me/joinchat/AAAAAAAAAAAAAAAAAAAAAA
+     ```
 
 2. Run both the following processes:
    ```bash
@@ -126,6 +136,8 @@ A moderator bot for the Unimore Informatica group
    Environment="TELEGRAM_BOT_TOKEN=1111111111:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
    Environment="LOG_LEVEL=DEBUG"
    Environment="LOG_FORMAT={asctime}\t| {name}\t| {message}"
+   Environment="BASE_URL=https://thor.steffo.eu"
+   Environment="GROUP_URL=https://t.me/joinchat/AAAAAAAAAAAAAAAAAAAAAA"
    ```
    
 5. Start (and optionally enable) both services:
