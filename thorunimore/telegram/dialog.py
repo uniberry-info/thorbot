@@ -46,9 +46,9 @@ class Dialog:
             log.debug(f"Sending: {self.campaign.challenge}")
             await self.campaign.challenge.send(bot=self.bot, entity=self.entity)
 
-    async def __message(self, msg):
+    async def __message(self, msg, **kwargs):
         """Send a message to the specified entity."""
-        return await self.bot.send_message(entity=self.entity, parse_mode="HTML", message=msg)
+        return await self.bot.send_message(entity=self.entity, parse_mode="HTML", message=msg, **kwargs)
 
     async def __first(self) -> AsyncAdventure:
         """The generator which chooses the first dialog."""
@@ -157,7 +157,7 @@ class Dialog:
         # Send the link to the group
         await self.__message('✨ Hai completato la verifica dell\'identità.\n\n'
                              '<a href="https://t.me/joinchat/AYAGH08KHLjBe1QbxNHLwA">Entra nel gruppo cliccando '
-                             'qui!</a>')
+                             'qui!</a>', buttons=self.bot.build_reply_markup(telethon.tl.custom.Button.clear()))
         return
 
     async def __privacy(self):
