@@ -1,15 +1,18 @@
 from __future__ import annotations
-from royalnet.typing import *
-from telethon.hints import *
+
+import logging
+import os
+
+import royalnet.campaigns
+import sqlalchemy.orm
 import telethon
 import telethon.tl.custom
-import sqlalchemy.orm
-import os
-import royalnet.campaigns
-import logging
+from royalnet.typing import *
+from telethon.hints import *
+
 from .challenges import *
-from ..deeplinking import DeepLinking
 from ..database import Student, Telegram
+from ..deeplinking import DeepLinking
 
 log = logging.getLogger(__name__)
 dl = DeepLinking(os.environ["SECRET_KEY"])
@@ -110,8 +113,9 @@ class CampaignContainer:
                     f'qui!</a>'
                 )
             else:
-                await self.__message(f"⚠️ Questo account Telegram è già connesso a <b>{tg.st.first_name} {tg.st.last_name}"
-                                     f"</b>.\n\n")
+                await self.__message(
+                    f"⚠️ Questo account Telegram è già connesso a <b>{tg.st.first_name} {tg.st.last_name}"
+                    f"</b>.\n\n")
             return
 
         # Ask for confirmation

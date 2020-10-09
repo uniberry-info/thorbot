@@ -1,9 +1,10 @@
-from royalnet.typing import *
 import itsdangerous
+from royalnet.typing import *
 
 
 class DeepLinking:
     """A helper class to pass secure information between Telegram and Flask via Telegram Deep Linking."""
+
     def __init__(self, secret_key: str, namespace: str = "t"):
         self.serializer = itsdangerous.URLSafeSerializer(secret_key=secret_key, salt=namespace)
 

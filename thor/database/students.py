@@ -1,6 +1,7 @@
-from .base import Base
 import sqlalchemy as s
 import sqlalchemy.orm as o
+
+from .base import Base
 
 
 class Student(Base):

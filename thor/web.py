@@ -1,13 +1,14 @@
-from royalnet.typing import *
-import flask
-import flask_sqlalchemy
-import authlib.integrations.flask_client
 import os
 import re
-from .database.base import Base
-from .database import Student
-from .deeplinking import DeepLinking
 
+import authlib.integrations.flask_client
+import flask
+import flask_sqlalchemy
+from royalnet.typing import *
+
+from .database import Student
+from .database.base import Base
+from .deeplinking import DeepLinking
 
 app = flask.Flask(__name__)
 app.config.update(**os.environ)

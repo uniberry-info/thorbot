@@ -1,12 +1,14 @@
-from royalnet.typing import *
 import asyncio
 import logging
+import os
+
 import coloredlogs
 import royalnet.alchemist
 import royalnet.campaigns
-import os
 import telethon
 import telethon.tl.custom
+from royalnet.typing import *
+
 from .campaigncontainer import CampaignContainer
 from ..database.base import Base
 
@@ -68,6 +70,7 @@ async def main():
         log.info(f"Running!")
         # noinspection PyProtectedMember
         await bot._run_until_disconnected()
+
 
 if __name__ == "__main__":
     asyncio.get_event_loop().run_until_complete(main())

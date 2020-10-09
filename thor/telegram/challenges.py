@@ -1,11 +1,12 @@
 from __future__ import annotations
-from royalnet.typing import *
-from telethon.hints import *
+
 import abc
+
+import royalnet.campaigns as rc
 import telethon
 import telethon.tl.custom as tc
-import royalnet.campaigns as rc
-
+from royalnet.typing import *
+from telethon.hints import *
 
 __all__ = (
     "Question",
@@ -18,6 +19,7 @@ class ThorChallenge(rc.AsyncChallenge, metaclass=abc.ABCMeta):
     Like a Royalnet challenge, but also define an action to be taken by the TelegramClient if this becomes the new
     challenge.
     """
+
     @abc.abstractmethod
     async def send(self, bot: telethon.TelegramClient, entity: Entity) -> ThorChallenge:
         raise NotImplementedError()
@@ -25,6 +27,7 @@ class ThorChallenge(rc.AsyncChallenge, metaclass=abc.ABCMeta):
 
 class Question(ThorChallenge):
     """Send a message to the chat, and wait for anything."""
+
     def __init__(self, message: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.message: str = message
@@ -39,6 +42,7 @@ class Question(ThorChallenge):
 
 class UnrestrictedKeyboard(Question):
     """Send a message and a custom keyboard to the chat, and wait for anything."""
+
     def __init__(self, message: str, choices: List[List[str]], *args, **kwargs):
         super().__init__(message, *args, **kwargs)
         self.choices: List[List[str]] = choices
@@ -73,5 +77,6 @@ class UnrestrictedKeyboard(Question):
 
 class Keyboard(UnrestrictedKeyboard):
     """Send a message and a custom keyboard to the chat, and only allow one of the possible keyboard responses."""
+
     async def filter(self, data: tc.Message) -> bool:
         return data.message and data.message in self.flat_choices()
