@@ -15,6 +15,13 @@ A moderator bot for the Unimore Informatica group
    pip install thorunimore
    ```
    
+3. Install the packages required to connect to the desired SQL database:
+   
+   - For PostgreSQL:
+     ```bash
+     pip install psycopg2-binary
+     ```
+
 ## Running
 
 ### Development
@@ -47,6 +54,12 @@ A moderator bot for the Unimore Informatica group
      ```bash
      TELEGRAM_BOT_USERNAME=thorunimorebot
      TELEGRAM_BOT_TOKEN=1111111111:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+     ```
+
+   - The desired logging level and format
+     ```bash
+     LOG_LEVEL=DEBUG
+     LOG_FORMAT={asctime}\t| {name}\t| {message}
      ```
 
 2. Run both the following processes:
@@ -93,7 +106,7 @@ A moderator bot for the Unimore Informatica group
    Type=exec
    User=thorunimore
    WorkingDirectory=/opt/thorunimore
-   ExecStart=/opt/thorunimore/venv/bin/gunicorn -b 127.0.0.1:30008 thorunimore.web.__main__:app
+   ExecStart=/opt/thorunimore/venv/bin/gunicorn -b 127.0.0.1:30008 thorunimore.web.__main__:reverse_proxy_app
    
    [Install]
    WantedBy=multi-user.target
@@ -111,6 +124,8 @@ A moderator bot for the Unimore Informatica group
    Environment="TELEGRAM_API_HASH=abcdefabcdefabcdefabcdefabcdefab"
    Environment="TELEGRAM_BOT_USERNAME=thorunimorebot"
    Environment="TELEGRAM_BOT_TOKEN=1111111111:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+   Environment="LOG_LEVEL=DEBUG"
+   Environment="LOG_FORMAT={asctime}\t| {name}\t| {message}"
    ```
    
 5. Start (and optionally enable) both services:
@@ -134,6 +149,7 @@ A moderator bot for the Unimore Informatica group
    
    ProxyPass "/" "http://127.0.0.1:30008/"
    ProxyPassReverse "/" "http://127.0.0.1:30008/"
+   RequestHeader set "X-Forwarded-Proto" expr=%{REQUEST_SCHEME}
    
    SSLEngine on
    SSLCertificateFile "/root/.acme.sh/*.steffo.eu/fullchain.cer"
