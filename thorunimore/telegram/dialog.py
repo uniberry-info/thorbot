@@ -84,7 +84,7 @@ class Dialog:
         msg: telethon.tl.custom.Message = yield
         await self.__message(
             '👋 Ciao! Sono Thor, il bot-moderatore di Unimore Informatica.\n\n'
-            'Per entrare nel gruppo devi <a href="http://lo.steffo.eu:30008/">effettuare la verifica '
+            'Per entrare nel gruppo devi <a href="https://thor.steffo.eu/">effettuare la verifica '
             'dell\'identità facendo il login qui con il tuo account Unimore</a>.\n\n'
             'Se hai bisogno di aiuto, manda un messaggio a @Steffo.'
         )
