@@ -63,13 +63,15 @@ class Dialog:
                 if msg.is_private:
                     yield self.__start()
                 else:
-                    await self.__message("⚠️ Questo comando funziona solo in chat privata (@thorunimorebot).")
+                    await self.__message(f"⚠️ Questo comando funziona solo in chat privata (@"
+                                         f"{os.environ['TELEGRAM_BOT_USERNAME']}).")
 
             elif text.startswith("/privacy"):
                 if msg.is_private:
                     yield self.__privacy()
                 else:
-                    await self.__message("⚠️ Questo comando funziona solo in chat privata (@thorunimorebot).")
+                    await self.__message(f"⚠️ Questo comando funziona solo in chat privata (@"
+                                         f"{os.environ['TELEGRAM_BOT_USERNAME']}).")
 
     async def __start(self):
         msg: telethon.tl.custom.Message = yield
