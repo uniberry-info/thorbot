@@ -5,14 +5,18 @@ import authlib.integrations.base_client
 import authlib.integrations.flask_client
 import flask
 import flask_sqlalchemy
+import werkzeug.middleware.proxy_fix
 from royalnet.typing import *
 
 from ..database import Student
 from ..database.base import Base
 from ..deeplinking import DeepLinking
 
+
 app = flask.Flask(__name__)
 app.config.update(**os.environ)
+
+reverse_proxy_app = werkzeug.middleware.proxy_fix.ProxyFix(app=app, x_for=1, x_proto=0, x_host=1, x_port=0, x_prefix=0)
 
 db = flask_sqlalchemy.SQLAlchemy(app=app, metadata=Base.metadata)
 
