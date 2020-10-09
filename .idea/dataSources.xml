@@ -7,5 +7,11 @@
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://localhost:5432/thor_dev</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="thor_prod@combo.steffo.eu" uuid="df44c125-3bc6-4056-a94c-b3c5ce7e8e39">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://combo.steffo.eu:5432/thor_prod</jdbc-url>
+    </data-source>
   </component>
 </project>

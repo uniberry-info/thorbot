@@ -147,6 +147,8 @@ class Dialog:
             id=from_user.id,
             first_name=from_user.first_name,
             last_name=from_user.last_name,
+            username=from_user.username,
+            privacy=privacy,
             st=st,
         )
         # Set the privacy mode
@@ -170,6 +172,7 @@ class Dialog:
         if tg is None:
             await self.__message("⚠️ Non hai ancora effettuato la verifica dell'account!\n\n"
                                  "Usa /start per iniziare!")
+            return
 
         # Ask for privacy mode
         choice = yield Keyboard(
@@ -244,6 +247,7 @@ class Dialog:
 
         if len(result) == 0:
             await self.__message("⚠️ Nessuno studente trovato.")
+            return
 
         # There might be more than a student with the same name!
         response: List[str] = []
