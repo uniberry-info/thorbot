@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block contents %}
+    <section class="main">
+        Premi il pulsante qui sotto e accedi con <b>il tuo account Unimore</b> per accedere al gruppo!
+    </section>
+    <section class="buttons">
+        <a class="button" href="{{ url_for("page_login") }}">
+            Verifica
+        </a>
+    </section>
+    <section class="privacy">
+        Effettuare la verifica salverà il tuo nome, il tuo cognome e la tua email da studente nel
+        database di Thor. Se in seguito vuoi che siano modificate o eliminate, o hai domande sulla gestione dei
+        tuoi dati, manda un messaggio a <a href="https://t.me/Steffo">@Steffo</a> o una email a
+        <a href="mailto:ste.pigozzi@gmail.com">ste.pigozzi@gmail.com</a>!
+    </section>
+{% endblock %}

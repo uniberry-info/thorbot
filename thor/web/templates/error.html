@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block contents %}
+    <h2>
+        Errore
+    </h2>
+    <section class="error">
+        {{ error }}
+    </section>
+    <section class="back">
+        <a href="{{ url_for("page_index") }}">
+            ← Torna all'indice
+        </a>
+    </section>
+{% endblock %}

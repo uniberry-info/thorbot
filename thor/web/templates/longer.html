@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block contents %}
+    <section class="error">
+        Non è stato possibile trasmettere automaticamente i tuoi dati a Telegram.
+    </section>
+    <section class="code">
+        Invia il seguente comando a <a href="https://t.me/thorunimorebot">Thor</a> per continuare:
+        <pre>
+            <code>
+                /start {{ state }}
+            </code>
+        </pre>
+    </section>
+{% endblock %}

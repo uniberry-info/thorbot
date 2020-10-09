@@ -1,6 +1,7 @@
 import os
 import re
 
+import authlib.integrations.base_client
 import authlib.integrations.flask_client
 import flask
 import flask_sqlalchemy
@@ -28,6 +29,11 @@ oauth.register(
 dl = DeepLinking(app.secret_key)
 
 
+@app.route("/")
+def page_index():
+    return flask.render_template("info.html")
+
+
 @app.route("/login")
 def page_login():
     return oauth.google.authorize_redirect(flask.url_for("page_authorize", _external=True))
@@ -35,14 +41,18 @@ def page_login():
 
 @app.route("/authorize")
 def page_authorize():
-    token = oauth.google.authorize_access_token()
+    try:
+        token = oauth.google.authorize_access_token()
+    except authlib.integrations.base_client.errors.MismatchingStateError:
+        return flask.redirect(flask.url_for("page_index"))
     userinfo = oauth.google.parse_id_token(token=token)
 
     if not userinfo.email_verified:
-        return flask.abort(403)
+        return flask.render_template("error.html", error="L'email del tuo account Google non è verificata."), 401
     email_prefix_match = re.match(r"(.+)@studenti\.unimore\.it", userinfo.email)
     if not email_prefix_match:
-        return flask.abort(403)
+        return flask.render_template("error.html", error="Questo account Google non appartiene a Studenti Unimore "
+                                                         "Informatica."), 403
     email_prefix = email_prefix_match.group(1)
 
     student: Optional[Student] = db.session.query(Student).filter_by(email_prefix=email_prefix).one_or_none()
@@ -59,6 +69,9 @@ def page_authorize():
     db.session.commit()
 
     state = dl.encode(("R", student.email_prefix))
+    if len(state) > 64:
+        return flask.render_template("longer.html", state=state), 500
+
     return flask.redirect(f"https://t.me/{app.config['TELEGRAM_BOT_USERNAME']}?start={state}")
 
 
