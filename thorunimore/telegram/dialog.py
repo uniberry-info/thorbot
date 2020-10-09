@@ -188,5 +188,83 @@ class Dialog:
     async def __whois(self, text: str):
         msg: telethon.tl.custom.Message = yield
 
-        # TODO: This command hasn't been implemented yet.
-        await self.__message("🚧 Questo comando non è ancora disponibile. Riprova più avanti!")
+        # Email
+        if "@" in text[1:]:
+            text, _ = text.split("@")
+        try:
+            int(text)
+        except ValueError:
+            # First and last name
+            if " " in text:
+                yield self.__whois_real_name(text=text)
+            # Username
+            else:
+                username = text.lstrip("@")
+                yield self.__whois_username(username=username)
+        else:
+            yield self.__whois_email(email_prefix=text)
+
+        await self.__message(
+            "⚠️ Non hai specificato correttamente cosa cercare.\n"
+            "\n"
+            "Puoi specificare un'username Telegram, un nome e cognome o un'email."
+        )
+
+    async def __whois_email(self, email_prefix: int):
+        msg: telethon.tl.custom.Message = yield
+
+        result = self.session.query(Student).filter_by(email_prefix=email_prefix).one_or_none()
+        if result is None:
+            await self.__message("⚠️ Nessuno studente trovato.")
+        elif result.tg.privacy:
+            await self.__message("👤 Lo studente è registrato, ma ha deciso di manterere privati i dettagli del suo "
+                                 "account.")
+        else:
+            await self.__message(result.message())
+
+    async def __whois_real_name(self, text: str):
+        msg: telethon.tl.custom.Message = yield
+
+        sq = (
+            self.session
+            .query(
+                Student,
+                sqlalchemy.func.concat(Student.first_name, " ", Student.last_name).label("full_name")
+            )
+            .subquery()
+        )
+        result = (
+            self.session
+            .query(sq)
+            .filter_by(full_name=text.upper())
+            .all()
+        )
+
+        if len(result) == 0:
+            await self.__message("⚠️ Nessuno studente trovato.")
+
+        # There might be more than a student with the same name!
+        response: List[str] = []
+        hidden: bool = False
+        for student in result:
+            if student.tg.privacy:
+                hidden = True
+                continue
+            response.append(student.message())
+        if hidden:
+            response.append("👤 Almeno uno studente ottenuto dalla ricerca è registrato, ma ha deciso di mantenere "
+                            "privati i dettagli del suo account.")
+
+        await self.__message("\n\n".join(response))
+
+    async def __whois_username(self, username: str):
+        msg: telethon.tl.custom.Message = yield
+
+        result = self.session.query(Telegram).filter_by(username=username).one_or_none()
+        if result is None:
+            await self.__message("⚠️ Nessuno studente trovato.")
+        elif result.privacy:
+            await self.__message("👤 Lo studente è registrato, ma ha deciso di manterere privati i dettagli del suo "
+                                 "account.")
+        else:
+            await self.__message(result.st.message())

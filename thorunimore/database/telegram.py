@@ -1,5 +1,7 @@
+from royalnet.typing import *
 import sqlalchemy as s
 import sqlalchemy.orm as o
+import html
 
 from .base import Base
 
@@ -24,3 +26,18 @@ class Telegram(Base):
     def __repr__(self):
         return f"{self.__qualname__}({self.id=}, {self.first_name=}, {self.last_name=}, {self.username=}, " \
                f"{self.privacy=}, {self.st_email_prefix=})"
+
+    def __str__(self):
+        if self.last_name:
+            return f"{self.first_name} {self.last_name}"
+        else:
+            return self.first_name
+
+    def name_mention(self) -> str:
+        return f'<a href="tg://user?id={self.id}">{html.escape(str(self))}</a>'
+
+    def at_mention(self) -> Optional[str]:
+        if self.username:
+            return f"@{self.username}"
+        else:
+            return None

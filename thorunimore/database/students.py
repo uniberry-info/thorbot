@@ -24,3 +24,11 @@ class Student(Base):
 
     def __repr__(self):
         return f"{self.__qualname__}({self.email_prefix=}, {self.first_name=}, {self.last_name=})"
+
+    def message(self):
+        return f"🎓 <b>{self.first_name} {self.last_name}</b>\n" \
+               f"{self.email()}\n" \
+               f"\n" \
+               f"Sul gruppo:\n" \
+               f"{self.tg.name_mention()}\n" \
+               f"{self.tg.at_mention() or ''}"
