@@ -124,22 +124,22 @@ class Dialog:
         tg: Telegram = self.session.query(Telegram).filter_by(id=from_user.id).one_or_none()
         st: Student = self.session.query(Student).filter_by(email_prefix=email_prefix).one()
 
-        # Check if the user is already registered
-        if tg.st == st:
-            await self.__message(
-                f'⭐️ Hai già effettuato la verifica dell\'identità.\n\n'
-                f'<a href="{os.environ["GROUP_URL"]}">Entra nel gruppo cliccando '
-                f'qui!</a>'
-            )
-            return
-
-        # Check if the account is connected to someone else
-        elif tg is not None:
-            await self.__message(
-                f"⚠️ Questo account Telegram è già connesso a <b>{tg.st.first_name} {tg.st.last_name}"
-                f"</b>.\n\n"
-            )
-            return
+        if tg is not None:
+            # The user is already registered
+            if tg.st == st:
+                await self.__message(
+                    f'⭐️ Hai già effettuato la verifica dell\'identità.\n\n'
+                    f'<a href="{os.environ["GROUP_URL"]}">Entra nel gruppo cliccando '
+                    f'qui!</a>'
+                )
+                return
+            # The account is connected to someone else
+            else:
+                await self.__message(
+                    f"⚠️ Questo account Telegram è già connesso a <b>{tg.st.first_name} {tg.st.last_name}"
+                    f"</b>.\n\n"
+                )
+                return
 
         # Ask for confirmation
         choice = yield Keyboard(
