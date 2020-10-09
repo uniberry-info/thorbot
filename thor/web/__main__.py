@@ -6,9 +6,9 @@ import flask
 import flask_sqlalchemy
 from royalnet.typing import *
 
-from .database import Student
-from .database.base import Base
-from .deeplinking import DeepLinking
+from ..database import Student
+from ..database.base import Base
+from ..deeplinking import DeepLinking
 
 app = flask.Flask(__name__)
 app.config.update(**os.environ)
