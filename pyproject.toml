@@ -7,7 +7,7 @@ license = "AGPL-3.0-or-later"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-royalnet = {git = "https://github.com/Steffo99/royalnet-6"}
+royalnet = "^6.0.0a1"
 telethon = "^1.16.4"
 cryptg = {version = "^0.2.post1", optional = true}
 aiohttp = "^3.6.2"
