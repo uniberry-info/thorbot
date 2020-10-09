@@ -10,6 +10,7 @@ import telethon.tl.custom
 from royalnet.typing import *
 
 from .dialog import Dialog
+from ..database import Telegram
 from ..database.base import Base
 
 log = logging.getLogger(__name__)
@@ -49,6 +50,18 @@ async def main():
     log.debug(f"Logged in as: {me.first_name} <{me.id}>")
 
     menus: Dict[int, Dialog] = {}
+
+    @bot.on(telethon.events.ChatAction())
+    async def on_chat_action(event: telethon.events.ChatAction.Event):
+        if event.user_joined:
+            users = await event.get_users()
+            chat = await event.get_chat()
+            assert len(users) == 1
+            user = users[0]
+            session = alchemist.Session()
+            tg = session.query(Telegram).filter_by(id=user.id).one_or_none()
+            if tg is None:
+                await bot.kick_participant(entity=chat, user=user)
 
     @bot.on(telethon.events.NewMessage())
     async def on_message(event: telethon.events.NewMessage.Event):
