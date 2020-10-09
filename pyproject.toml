@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "thor"
+name = "thorunimore"
 version = "1.0.0"
 description = "A moderator bot for the Unimore Informatica group"
 authors = ["Stefano Pigozzi <ste.pigozzi@gmail.com>"]
