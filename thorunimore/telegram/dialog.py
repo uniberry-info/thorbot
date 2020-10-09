@@ -56,18 +56,20 @@ class Dialog:
 
         # If this is a text message
         if text := msg.message:
+            if text.startswith("/whois"):
+                yield self.__whois(text=text)
 
-            # Group chat commands
-            if not msg.is_private:
-                if text.startswith("/whois"):
-                    yield self.__whois(text=text)
-
-            # Private chat commands
-            else:
-                if text.startswith("/start"):
+            elif text.startswith("/start"):
+                if msg.is_private:
                     yield self.__start()
-                elif text.startswith("/privacy"):
+                else:
+                    await self.__message("⚠️ Questo comando funziona solo in chat privata (@thorunimorebot).")
+
+            elif text.startswith("/privacy"):
+                if msg.is_private:
                     yield self.__privacy()
+                else:
+                    await self.__message("⚠️ Questo comando funziona solo in chat privata (@thorunimorebot).")
 
     async def __start(self):
         msg: telethon.tl.custom.Message = yield
