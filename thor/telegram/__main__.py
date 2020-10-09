@@ -9,7 +9,7 @@ import telethon
 import telethon.tl.custom
 from royalnet.typing import *
 
-from .campaigncontainer import CampaignContainer
+from .dialog import Dialog
 from ..database.base import Base
 
 log = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ async def main():
     me = await bot.get_me()
     log.debug(f"Logged in as: {me.first_name} <{me.id}>")
 
-    menus: Dict[int, CampaignContainer] = {}
+    menus: Dict[int, Dialog] = {}
 
     @bot.on(telethon.events.NewMessage())
     async def on_message(event: telethon.events.NewMessage.Event):
@@ -56,7 +56,7 @@ async def main():
         log.debug(f"Received message: {msg}")
         if msg.chat_id not in menus:
             log.debug(f"Creating a new Menu for {msg.chat_id}")
-            menus[msg.chat_id] = await CampaignContainer.create(bot=bot, entity=msg.chat, session=alchemist.Session())
+            menus[msg.chat_id] = await Dialog.create(bot=bot, entity=msg.chat, session=alchemist.Session())
         menu = menus[msg.chat_id]
         try:
             await menu.next(msg)

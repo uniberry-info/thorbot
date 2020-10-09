@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 dl = DeepLinking(os.environ["SECRET_KEY"])
 
 
-class CampaignContainer:
+class Dialog:
     def __init__(self, bot: telethon.TelegramClient, entity: Entity, session: sqlalchemy.orm.Session):
         self.bot: telethon.TelegramClient = bot
         self.entity: Entity = entity
@@ -29,7 +29,7 @@ class CampaignContainer:
     async def create(cls,
                      bot: telethon.TelegramClient,
                      entity: Entity,
-                     session: sqlalchemy.orm.Session) -> CampaignContainer:
+                     session: sqlalchemy.orm.Session) -> Dialog:
         menu = cls(bot=bot, entity=entity, session=session)
         menu.campaign = await royalnet.campaigns.AsyncCampaign.create(start=menu.__first())
         return menu
