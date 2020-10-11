@@ -1,5 +1,7 @@
 # thorunimore
 
+![](resources/bot_image.png)
+
 A moderator bot for the Unimore Informatica group
 
 ## Installation
