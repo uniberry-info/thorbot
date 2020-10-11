@@ -6,6 +6,7 @@ import re
 
 import itsdangerous
 import royalnet.campaigns
+import royalnet.campaigns.exc
 import sqlalchemy.orm
 import telethon
 import telethon.tl.custom
@@ -72,6 +73,9 @@ class Dialog:
         try:
             log.debug(f"Advancing: {self}")
             await self.campaign.next(msg)
+        except royalnet.campaigns.exc.ChallengeFailedError:
+            log.debug(f"Challenge failed: {self}")
+            return
         except StopAsyncIteration:
             log.debug(f"Closing: {self}")
             self.session.close()
