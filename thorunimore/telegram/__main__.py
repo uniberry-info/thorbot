@@ -7,6 +7,8 @@ import royalnet.alchemist
 import royalnet.campaigns
 import telethon
 import telethon.tl.custom
+import sys
+import traceback
 from royalnet.typing import *
 
 from .dialog import Dialog
@@ -66,7 +68,7 @@ async def main():
                 await bot.send_message(
                     entity=chat,
                     parse_mode="HTML",
-                    message=tg.st.message()
+                    message=tg.st.whois()
                 )
 
     @bot.on(telethon.events.NewMessage())
@@ -82,11 +84,12 @@ async def main():
         except StopAsyncIteration:
             del menus[msg.chat_id]
         except Exception as e:
-            log.error(f"{e}")
-            bot.send_message(entity=msg.chat,
-                             message="☢️ Si è verificato un errore critico e la conversazione è stata annullata.\n"
-                                     "\n"
-                                     "L'errore è stato salvato nei log del server.")
+            log.error("".join(traceback.format_exception(*sys.exc_info())))
+            await bot.send_message(
+                entity=msg.chat,
+                message="☢️ Si è verificato un errore critico e la conversazione è stata annullata.\n"
+                        "\n"
+                        "L'errore è stato salvato nei log del server.")
 
     while True:
         log.info(f"Catching up...")

@@ -28,6 +28,11 @@ section {
   padding: 4px;
   border-radius: 4px;
 }
+.tip {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 4px;
+  border-radius: 4px;
+}
 .buttons {
   display: flex;
   align-content: center;
