@@ -62,6 +62,12 @@ async def main():
             tg = session.query(Telegram).filter_by(id=user.id).one_or_none()
             if tg is None:
                 await bot.kick_participant(entity=chat, user=user)
+            else:
+                await bot.send_message(
+                    entity=chat,
+                    parse_mode="HTML",
+                    message=tg.st.message()
+                )
 
     @bot.on(telethon.events.NewMessage())
     async def on_message(event: telethon.events.NewMessage.Event):
