@@ -47,16 +47,37 @@ def page_login():
 def page_authorize():
     try:
         token = oauth.google.authorize_access_token()
-    except authlib.integrations.base_client.errors.MismatchingStateError:
-        return flask.redirect(flask.url_for("page_index"))
+    except werkzeug.exceptions.BadRequestKeyError:
+        return flask.render_template(
+            "error.html",
+            error="Mancano i parametri query necessari per effettuare l'autenticazione OAuth.",
+            tip='Torna all\'indice e rifai tutto da capo. Se il problema persiste, contatta '
+                '<a href="https://t.me/Steffo">@Steffo</a>!'
+        ), 401
+    except authlib.integrations.base_client.errors.OAuthError:
+        return flask.render_template(
+            "error.html",
+            error="Qualcosa è andato storto durante l'autenticazione.",
+            tip='Torna all\'indice e rifai tutto da capo. Se il problema persiste, contatta '
+                '<a href="https://t.me/Steffo">@Steffo</a>!'
+        ), 401
     userinfo = oauth.google.parse_id_token(token=token)
 
     if not userinfo.email_verified:
-        return flask.render_template("error.html", error="L'email del tuo account Google non è verificata."), 401
+        return flask.render_template(
+            "error.html",
+            error="L'email del tuo account Google non è verificata.",
+            tip='Probabilmente hai effettuato l\'accesso con l\'email sbagliata. Fai il '
+                '<a href="https://accounts.google.com/logout">logout</a> da tutti i tuoi account Google e riprova!'
+        ), 403
     email_prefix_match = re.match(r"(.+)@studenti\.unimore\.it", userinfo.email)
     if not email_prefix_match:
-        return flask.render_template("error.html", error="Questo account Google non appartiene a Studenti Unimore "
-                                                         "Informatica."), 403
+        return flask.render_template(
+            "error.html",
+            error="Questo account Google non appartiene a Studenti Unimore Informatica.",
+            tip='Probabilmente hai effettuato l\'accesso con l\'email sbagliata. Fai il '
+                '<a href="https://accounts.google.com/logout">logout</a> da tutti i tuoi account Google e riprova!',
+        ), 403
     email_prefix = email_prefix_match.group(1)
 
     student: Optional[Student] = db.session.query(Student).filter_by(email_prefix=email_prefix).one_or_none()

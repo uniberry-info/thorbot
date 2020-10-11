@@ -28,12 +28,19 @@ class ThorChallenge(rc.AsyncChallenge, metaclass=abc.ABCMeta):
 class Question(ThorChallenge):
     """Send a message to the chat, and wait for anything."""
 
-    def __init__(self, message: str, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, message: str, *message_args, **message_kwargs):
+        super().__init__()
         self.message: str = message
+        self.message_args = message_args
+        self.message_kwargs = message_kwargs
 
     async def send(self, bot: telethon.TelegramClient, entity: Entity) -> Question:
-        await bot.send_message(entity=entity, message=self.message)
+        await bot.send_message(
+            entity=entity,
+            message=self.message,
+            parse_mode="HTML",
+            *self.message_args,
+            **self.message_kwargs)
         return self
 
     async def filter(self, data: Any) -> bool:
@@ -71,7 +78,13 @@ class UnrestrictedKeyboard(Question):
 
     async def send(self, bot: telethon.TelegramClient, entity: Entity) -> UnrestrictedKeyboard:
         markup = bot.build_reply_markup(self.buttons())
-        await bot.send_message(entity=entity, message=self.message, buttons=markup)
+        await bot.send_message(
+            entity=entity,
+            message=self.message,
+            buttons=markup,
+            parse_mode="HTML",
+            *self.message_args,
+            **self.message_kwargs)
         return self
 
 

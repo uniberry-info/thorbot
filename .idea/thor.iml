@@ -11,7 +11,7 @@
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/thor/web/templates" />
+        <option value="$MODULE_DIR$/thorunimore/web/templates" />
       </list>
     </option>
   </component>

@@ -14,21 +14,53 @@ class Student(Base):
     first_name = s.Column(s.String, nullable=False)
     last_name = s.Column(s.String, nullable=False)
 
+    privacy = s.Column(s.Boolean, nullable=False, default=True, server_default="TRUE")
+    """Whether or not the student has requested to keep his data hidden from all users."""
+
     tg = o.relationship("Telegram", back_populates="st")
 
     def email(self):
+        """
+        Compose the full email of the student.
+
+        :return: The email in form of a str.
+        """
         return f"{self.email_prefix}@studenti.unimore.it"
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        :return: The full name of the user and their email in classic form (Stefano Pigozzi <ste.pigozzi@gmail.com>).
+        """
         return f"{self.first_name} {self.last_name} <{self.email()}>"
 
     def __repr__(self):
-        return f"{self.__qualname__}({self.email_prefix=}, {self.first_name=}, {self.last_name=})"
+        return f"{self.__qualname__}({self.email_prefix=}, {self.first_name=}, {self.last_name=}, {self.privacy=})"
 
-    def message(self):
-        return f"🎓 <b>{self.first_name} {self.last_name}</b>\n" \
-               f"{self.email()}\n" \
-               f"\n" \
-               f"Sul gruppo:\n" \
-               f"{self.tg.name_mention()}\n" \
-               f"{self.tg.at_mention() or ''}"
+    def whois(self) -> str:
+        """
+        Compose the whois message for this student, respecting privacy settings.
+
+        :return: The composed message.
+        """
+        if self.privacy:
+            return "👤 Lo studente è registrato, ma ha deciso di manterere privati i dettagli del suo account."
+        return self.whois_message()
+
+    def whois_message(self):
+        """
+        Compose the whois message for this student, ignoring privacy settings.
+
+        :return: The composed message.
+        """
+        rows = [
+            f"🎓 <b>{self.first_name} {self.last_name}</b>",
+            f"{self.email()}",
+            ""
+        ]
+
+        tgs = [tg for tg in self.tg]
+        for tg in tgs:
+            rows.append(tg.minimessage())
+            rows.append("")
+
+        return "\n".join(rows)
