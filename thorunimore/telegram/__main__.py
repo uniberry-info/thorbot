@@ -64,6 +64,11 @@ async def main():
             tg = session.query(Telegram).filter_by(id=user.id).one_or_none()
             if tg is None:
                 await bot.kick_participant(entity=chat, user=user)
+                await bot.send_message(
+                    entity=chat,
+                    parse_mode="HTML",
+                    message="🚫 L'account è stato rimosso dal gruppo perchè non autenticato."
+                )
             else:
                 await bot.send_message(
                     entity=chat,
