@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "thorunimore"
-version = "1.0.6"
+version = "1.0.7"
 description = "A moderator bot for the Unimore Informatica group"
 authors = ["Stefano Pigozzi <ste.pigozzi@gmail.com>"]
 license = "AGPL-3.0-or-later"
