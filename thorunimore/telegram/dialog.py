@@ -4,6 +4,7 @@ import logging
 import os
 import re
 
+import itsdangerous
 import royalnet.campaigns
 import sqlalchemy.orm
 import telethon
@@ -24,21 +25,50 @@ email_regex = re.compile(r"^([0-9]+)(?:@studenti\.unimore\.it)?$")
 
 class Dialog:
     def __init__(self, bot: telethon.TelegramClient, entity: Entity, session: sqlalchemy.orm.Session):
+        """
+        Initialize an Dialog object.
+
+        .. warning:: Do not use this, use the Dialog.create() method instead!
+        """
         self.bot: telethon.TelegramClient = bot
+        "The bot at one side of the Dialog."
+
         self.entity: Entity = entity
+        "The entity (user, group) at the other side of the Dialog."
+
         self.session: sqlalchemy.orm.Session = session
+        "The SQLAlchemy Session to be used exclusively for this dialog."
+
         self.campaign: royalnet.campaigns.AsyncCampaign = ...
+        """
+        The AsyncCampaign this dialog will use to track the back and forth (taking form of multiple AsyncAdventures).
+        
+        May be an instance of Ellipsis if the Dialog is not initialized.
+        """
 
     @classmethod
     async def create(cls,
                      bot: telethon.TelegramClient,
                      entity: Entity,
                      session: sqlalchemy.orm.Session) -> Dialog:
+        """
+        Create a new Dialog object.
+
+        :param bot: The bot at one side of the Dialog.
+        :param entity: The entity (user, group) at the other side of the Dialog.
+        :param session: The SQLAlchemy Session to be used exclusively for this dialog.
+        :return: The created dialog.
+        """
         menu = cls(bot=bot, entity=entity, session=session)
         menu.campaign = await royalnet.campaigns.AsyncCampaign.create(start=menu.__first())
         return menu
 
     async def next(self, msg: telethon.tl.custom.Message) -> None:
+        """
+        Advance to the next message of the Dialog.
+
+        :param msg: The message to pass to the AsyncAdventure.
+        """
         try:
             log.debug(f"Advancing: {self}")
             await self.campaign.next(msg)
@@ -50,8 +80,16 @@ class Dialog:
             log.debug(f"Sending: {self.campaign.challenge}")
             await self.campaign.challenge.send(bot=self.bot, entity=self.entity)
 
-    async def __message(self, msg, **kwargs):
-        """Send a message to the specified entity."""
+    async def __message(self, msg, **kwargs) -> telethon.types.Message:
+        """
+        Send a Telegram message to the user at the other side of the dialog.
+
+        It's a shortcut to self.bot.send_message.
+
+        :param msg: The contents of the message.
+        :param kwargs: Keyword arguments to pass to send_message.
+        :return: The Message returned by send_message.
+        """
         return await self.bot.send_message(
             entity=self.entity,
             parse_mode="HTML",
@@ -61,7 +99,7 @@ class Dialog:
         )
 
     async def __first(self) -> AsyncAdventure:
-        """The generator which chooses the first dialog."""
+        """What to do when the dialog is first opened."""
         msg: telethon.tl.custom.Message = yield
 
         # If this is a text message
@@ -86,6 +124,7 @@ class Dialog:
                     )
 
     async def __start(self):
+        """Disambiguation for the /start command."""
         msg: telethon.tl.custom.Message = yield
 
         text: str = msg.message
@@ -98,25 +137,40 @@ class Dialog:
             yield self.__deeplink_start(payload=split[1])
 
     async def __normal_start(self):
+        """The /start command, called without arguments."""
         msg: telethon.tl.custom.Message = yield
 
         await self.__message(
-            f'👋 Ciao! Sono Thor, il bot-moderatore di Unimore Informatica.\n\n'
-            f'Per entrare nel gruppo devi <a href="{os.environ["BASE_URL"]}/">effettuare la verifica '
-            f'dell\'identità facendo il login qui con il tuo account Unimore</a>.\n\n'
-            f'Se hai bisogno di aiuto, manda un messaggio a @Steffo.'
+            f'👋 Ciao! Sono Thor, il bot-moderatore di Unimore Informatica.\n'
+            f'\n'
+            f'Se vuoi entrare nel gruppo, devi <b>dimostrare di essere uno studente dell\'Unimore</b>.\n'
+            f'\n'
+            f'<a href="">Fai il login con il tuo account universitario qui</a>, poi una volta tornato su Telegram '
+            f'premi il tasto <i>AVVIA</i> in basso per ricevere il link! 😊'
         )
 
     async def __deeplink_start(self, payload: str):
+        """The /start command, called with deep-linked arguments."""
         msg: telethon.tl.custom.Message = yield
 
-        opcode, data = dl.decode(payload)
+        try:
+            opcode, data = dl.decode(payload)
+        except itsdangerous.exc.BadData:
+            await self.__message("⚠️ I dati ricevuti non sono validi.")
+            return
 
         # R: Register new account
         if opcode == "R":
             yield self.__register(email_prefix=data)
 
     async def __register(self, email_prefix: str) -> AsyncAdventure:
+        """
+        The /start command, called with a payload starting with R.
+
+        Links a Telegram account to a real student.
+
+        :param email_prefix: The prefix before @studenti.unimore.it
+        """
         msg: telethon.tl.custom.Message = yield
 
         from_user = await msg.get_sender()
@@ -126,7 +180,7 @@ class Dialog:
 
         if tg is not None:
             # The user is already registered
-            if tg.st == st:
+            if tg in st.tg:
                 await self.__message(
                     f'⭐️ Hai già effettuato la verifica dell\'identità.\n\n'
                     f'<a href="{os.environ["GROUP_URL"]}">Entra nel gruppo cliccando '
@@ -137,7 +191,7 @@ class Dialog:
             else:
                 await self.__message(
                     f"⚠️ Questo account Telegram è già connesso a <b>{tg.st.first_name} {tg.st.last_name}"
-                    f"</b>.\n\n"
+                    f"</b>."
                 )
                 return
 
@@ -186,6 +240,7 @@ class Dialog:
         return
 
     async def __privacy(self):
+        """The /privacy command, used to toggle between privacy states."""
         msg: telethon.tl.custom.Message = yield
 
         from_user = await msg.get_sender()

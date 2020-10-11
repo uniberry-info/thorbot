@@ -14,7 +14,7 @@ class Student(Base):
     first_name = s.Column(s.String, nullable=False)
     last_name = s.Column(s.String, nullable=False)
 
-    tg = o.relationship("Telegram", back_populates="st", uselist=False)
+    tg = o.relationship("Telegram", back_populates="st")
 
     def email(self):
         return f"{self.email_prefix}@studenti.unimore.it"
