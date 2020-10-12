@@ -62,6 +62,5 @@ class Telegram(Base):
 
     def minimessage(self) -> str:
         """Compose the whois message subsection for this Telegram account."""
-        newline = "\n"
         return f"📱 {self.name_mention()}\n" \
-               f"{self.at_mention() + newline or ''}"
+               f"{self.at_mention() or ''}\n"
