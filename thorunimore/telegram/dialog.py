@@ -126,6 +126,9 @@ class Dialog:
             if text.startswith("/whois"):
                 yield self.__whois()
 
+            elif text.startswith("/help"):
+                yield self.__help()
+
             elif text.startswith("/start"):
                 if msg.is_private:
                     yield self.__start()
@@ -141,6 +144,42 @@ class Dialog:
                     await self.__message(
                         f"⚠️ Questo comando funziona solo in chat privata (@{os.environ['TELEGRAM_BOT_USERNAME']})."
                     )
+
+    async def __help(self) -> AsyncAdventure:
+        """The /help command."""
+        msg: telethon.tl.custom.Message = yield
+
+        lines = [
+            f"ℹ️ @{os.environ['TELEGRAM_BOT_USERNAME']} è il bot-moderatore del gruppo studentesco Unimore "
+            f"Informatica.",
+            "",
+            'Controlla che gli account che si uniscono al gruppo siano effettivamente studenti verificandone '
+            'l\'identità attraverso autenticazione '
+            '<a href="https://en.wikipedia.org/wiki/OpenID_Connect">OpenID Connect</a> con il loro account Google '
+            'Apps for Education.',
+            "",
+            "<b>Comandi disponibili:</b>",
+            "- /help | Ottieni informazioni sul bot",
+            "- /whois | Visualizza informazioni su uno studente o un account",
+        ]
+
+        if msg.is_private:
+            lines = [
+                *lines,
+                "- /start | Avvia il processo di autenticazione",
+                "- /settings | Cambia le tue impostazioni di privacy",
+            ]
+        else:
+            lines = [
+                *lines,
+                "",
+                "<i>Più comandi sono disponibili avviando una chat privata con il bot!</i>",
+            ]
+
+        await self.__message(
+            "\n".join(lines)
+        )
+
 
     async def __start(self) -> AsyncAdventure:
         """Disambiguation for the /start command."""
