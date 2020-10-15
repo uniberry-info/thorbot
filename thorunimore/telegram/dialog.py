@@ -180,7 +180,6 @@ class Dialog:
             "\n".join(lines)
         )
 
-
     async def __start(self) -> AsyncAdventure:
         """Disambiguation for the /start command."""
         msg: telethon.tl.custom.Message = yield
