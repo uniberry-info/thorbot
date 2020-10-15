@@ -100,6 +100,11 @@ def page_authorize():
     return flask.redirect(f"https://t.me/{app.config['TELEGRAM_BOT_USERNAME']}?start={state}")
 
 
+@app.route("/privacy")
+def page_privacy():
+    return flask.render_template("privacy.html")
+
+
 if __name__ == "__main__":
     db.create_all()
     app.run()
