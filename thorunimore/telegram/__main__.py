@@ -58,7 +58,17 @@ async def main():
         if event.user_joined:
             users = await event.get_users()
             chat = await event.get_chat()
-            assert len(users) == 1
+
+            if len(users) == 0:
+                log.warning(f"Telegram sent join information improperly! {chat=}, {users=}")
+                await bot.send_message(
+                    entity=chat,
+                    parse_mode="HTML",
+                    message="❓ Un nuovo account si è unito alla chat, ma Telegram inaspettatamente non ha fornito "
+                            "alcuna informazione su di esso, e pertanto non è stato possibile verificarlo."
+                )
+                return
+
             user = users[0]
             session = alchemist.Session()
             tg = session.query(Telegram).filter_by(id=user.id).one_or_none()
