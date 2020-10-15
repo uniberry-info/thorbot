@@ -133,9 +133,9 @@ class Dialog:
                         f"⚠️ Questo comando funziona solo in chat privata (@{os.environ['TELEGRAM_BOT_USERNAME']})."
                     )
 
-            elif text.startswith("/privacy"):
+            elif text.startswith("/settings"):
                 if msg.is_private:
-                    yield self.__privacy()
+                    yield self.__settings()
                 else:
                     await self.__message(
                         f"⚠️ Questo comando funziona solo in chat privata (@{os.environ['TELEGRAM_BOT_USERNAME']})."
@@ -225,7 +225,7 @@ class Dialog:
             message="📝 Vuoi permettere agli altri studenti verificati di visualizzare il tuo <b>vero nome</b> e la tua "
                     "<b>email istituzionale</b> attraverso il comando /whois?\n\n"
                     "(Gli amministratori del gruppo vi avranno comunque accesso, e potrai cambiare idea in qualsiasi "
-                    "momento con il comando /privacy.)",
+                    "momento con il comando /settings.)",
             choices=[["👤 Nascondi.", "📱 Mostra!"]]
         )
         st.privacy = choice.message == "👤 Nascondi."
@@ -250,8 +250,8 @@ class Dialog:
         )
         return
 
-    async def __privacy(self) -> AsyncAdventure:
-        """The /privacy command, used to toggle between privacy states."""
+    async def __settings(self) -> AsyncAdventure:
+        """The /settings command, used to toggle between privacy states."""
         msg: telethon.tl.custom.Message = yield
 
         from_user = await msg.get_sender()
@@ -270,7 +270,7 @@ class Dialog:
             message="📝 Vuoi permettere agli altri studenti verificati di visualizzare il tuo <b>vero nome</b> e la tua "
                     "<b>email istituzionale</b> attraverso il comando /whois?\n\n"
                     "(Gli amministratori del gruppo vi avranno comunque accesso, e potrai cambiare idea in qualsiasi "
-                    "momento con il comando /privacy.)",
+                    "momento con il comando /settings.)",
             choices=[["👤 Nascondi.", "📱 Mostra!"]],
         )
         tg.st.privacy = choice.message == "👤 Nascondi."
