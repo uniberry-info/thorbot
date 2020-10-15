@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block contents %}
+    <h1>
+        Privacy
+    </h1>
+    <hr/>
+    <section class="who">
+        <h2>
+            Chi sei?
+        </h2>
+        <p>
+            Sono <b>Stefano Pigozzi</b>, lo studente Unimore che amministra il gruppo Unimore Informatica.
+        </p>
+        <p>
+            Se hai bisogno, puoi contattarmi <a href="https://t.me/Steffo">su Telegram</a>,
+            <a href="mailto:ste.pigozzi@gmail.com">via email</a> oppure
+            <a href="https://github.com/Steffo99/thorunimore/issues/new/choose">su GitHub</a>.
+        </p>
+    </section>
+    <hr/>
+    <section class="why">
+        <h2>
+            Perchè hai bisogno dei miei dati?
+        </h2>
+        <p>
+            Ho bisogno dei tuoi dati per <b>assicurarmi che tu sia uno studente dell'Unimore</b>, e non uno spammer,
+            una persona esterna o un professore.
+        </p>
+        <p>
+            In più, <i>se</i> durante il processo di verifica decidi di mostrare le tue informazioni attraverso il comando
+            <code>/whois</code>, ho (ovviamente) bisogno dei tuoi dati per poterli mostrare.
+        </p>
+    </section>
+    <hr/>
+    <section class="what">
+        <h2>
+            Di quali dati hai bisogno?
+        </h2>
+        <p>
+            I dati che raccolgo durante il processo di verifica sono:
+        </p>
+        <ul>
+            <li>Prefisso dell'email istituzionale (quello con i numeri)</li>
+            <li>Nome reale</li>
+            <li>Cognome reale</li>
+            <li>ID account Telegram</li>
+            <li>Nome su Telegram</li>
+            <li>Cognome su Telegram</li>
+            <li>Username di Telegram</li>
+        </ul>
+        <p>
+            In più, mantengo salvate le tue impostazioni di privacy del bot, in particolare:
+        </p>
+        <ul>
+            <li>Se vuoi essere visibile o no attraverso il comando <code>/whois</code></li>
+        </ul>
+        <div class="smol-box">
+            <p>
+                Ad esempio, i miei dati che sono archiviati sul bot sono:
+            </p>
+            <ul>
+                <li><b>Prefisso email</b>: 256895@studenti.unimore.it</li>
+                <li><b>Nome reale</b>: Stefano</li>
+                <li><b>Cognome reale</b>: Pigozzi</li>
+                <li><b>ID Telegram</b>: 25167391</li>
+                <li><b>Nome Telegram</b>: Stefano</li>
+                <li><b>Cognome Telegram</b>: Pigozzi</li>
+                <li><b>Username Telegram</b>: @Steffo</li>
+                <li><b>Dati nascosti da whois</b>: Falso</li>
+            </ul>
+        </div>
+    </section>
+    <hr/>
+    <section class="when">
+        <h2>
+            Per quanto hai bisogno dei miei dati?
+        </h2>
+        <p>
+            Per essere sicuro che tu sia entrato legittimamente nel gruppo, e non attraverso un bug nel bot, ho
+            bisogno di mantenere i tuoi dati <b>fintanto che sarai dentro a un gruppo che usa Thor</b>.
+        </p>
+        <p>
+            Per ora, <a href="https://github.com/Steffo99/thorunimore/issues/5">i dati non vengono ancora eliminati
+            automaticamente</a>, inoltre <a href="https://github.com/Steffo99/thorunimore/issues/2">non è ancora
+            disponibile un comando che ne permetta l'eliminazione</a>, quindi se desideri che tutte le informazioni
+            su di te siano rimosse per ora dovrai <b>contattarmi</b>.
+        </p>
+    </section>
+    <hr/>
+    <section class="where">
+        <h2>
+            Dove sono salvati i miei dati?
+        </h2>
+        <p>
+            I dati sono archiviati in un database PostgreSQL che si trova sullo stesso server in cui è hostato il
+            bot: un <a href="https://www.scaleway.com/en/dedibox/start/start-2-s-sata/">server dedicato START-2-S-SATA di Scaleway</a> collocato nel loro datacenter francese
+            DC2.
+        </p>
+        <p>
+            Il server è condiviso tra me e altri due amici (<a href="https://t.me/EvilBalu">@EvilBalu</a> e
+            <a href="https://t.me/Proto">@Proto</a>), in quanto alcuni loro progetti sono ospitati lì. Tecnicamente,
+            loro potrebbero avere accesso ai dati (anche se non avrebbero motivo per farlo).
+        </p>
+        <p>
+            Se trovi una vulnerabilità sul server, ti prego di segnalarmela! :)
+        </p>
+    </section>
+    <hr/>
+    <section class="back">
+        <a href="{{ url_for("page_index") }}">
+            ← Torna all'indice
+        </a>
+    </section>
+{% endblock %}
