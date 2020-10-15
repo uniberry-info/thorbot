@@ -113,6 +113,7 @@ class Dialog:
             parse_mode="HTML",
             message=msg,
             buttons=self.bot.build_reply_markup(telethon.tl.custom.Button.clear()),
+            link_preview=False,
             **kwargs
         )
 
