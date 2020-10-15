@@ -1,5 +1,6 @@
 # Telethon session files
 *.session
+*.session-journal
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
