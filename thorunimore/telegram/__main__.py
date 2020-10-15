@@ -90,15 +90,28 @@ async def main():
     async def on_message(event: telethon.events.NewMessage.Event):
         msg: telethon.tl.custom.Message = event.message
         log.debug(f"Received message: {msg}")
+
+        # Restart dialog
+        if msg.chat_id in menus and msg.message.startswith("/start"):
+            log.debug(f"Stopping existing Dialog for {msg.chat_id}")
+            await menus[msg.chat_id].stop()
+            del menus[msg.chat_id]
+
+        # Create new dialog
         if msg.chat_id not in menus:
-            log.debug(f"Creating a new Menu for {msg.chat_id}")
+            log.debug(f"Creating new Dialog for {msg.chat_id}")
             menus[msg.chat_id] = await Dialog.create(bot=bot, entity=msg.chat, session=alchemist.Session())
+
+        # Shortcut for the dialog
         menu = menus[msg.chat_id]
+
+        log.debug(f"Advancing Dialog for {msg.chat_id}")
+        # noinspection PyBroadException
         try:
             await menu.next(msg)
         except StopAsyncIteration:
             del menus[msg.chat_id]
-        except Exception as e:
+        except Exception:
             log.error("".join(traceback.format_exception(*sys.exc_info())))
             await bot.send_message(
                 entity=msg.chat,
@@ -113,6 +126,9 @@ async def main():
         log.info(f"Running!")
         # noinspection PyProtectedMember
         await bot._run_until_disconnected()
+
+        log.error("Disconnected... Retrying in a minute.")
+        await asyncio.sleep(60)
 
 
 if __name__ == "__main__":

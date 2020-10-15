@@ -77,12 +77,26 @@ class Dialog:
             log.debug(f"Challenge failed: {self}")
             return
         except StopAsyncIteration:
-            log.debug(f"Closing: {self}")
-            self.session.close()
+            await self._close()
             raise
         else:
             log.debug(f"Sending: {self.campaign.challenge}")
             await self.campaign.challenge.send(bot=self.bot, entity=self.entity)
+
+    async def stop(self) -> None:
+        """
+        Suddenly stop a dialog, and cleanup.
+        """
+        log.debug(f"Stopping: {self}")
+        await self.campaign.adventure.aclose()
+        await self._close()
+
+    async def _close(self) -> None:
+        """
+        Close and cleanup a dialog.
+        """
+        log.debug(f"Closing: {self}")
+        self.session.close()
 
     async def __message(self, msg, **kwargs) -> telethon.types.Message:
         """
