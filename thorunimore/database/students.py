@@ -52,8 +52,11 @@ class Student(Base):
 
         :return: The composed message.
         """
+
+        emoji = "👤" if self.privacy else "🎓"
+
         rows = [
-            f"🎓 <b>{self.first_name} {self.last_name}</b>",
+            f"{emoji} <b>{self.first_name} {self.last_name}</b>",
             f"{self.email()}",
             ""
         ]
