@@ -327,18 +327,25 @@ class Dialog:
         cmd, *args = msg.message.split(" ", 1)
         args = " ".join(args)
 
+        from_user = await msg.get_sender()
+        from_tg: Telegram = self.session.query(Telegram).filter_by(id=from_user.id).one_or_none()
+        if from_tg is None:
+            await self.__message("⚠️ Non sei registrato a Thor, pertanto non puoi visualizzare i dati di nessun "
+                                 "utente.")
+            return
+
         # Email
         if match := re.match(email_regex, args):
             email_prefix = match.group(1)
-            yield self.__whois_email(email_prefix=email_prefix)
+            yield self.__whois_email(email_prefix=email_prefix, admin=from_tg.is_admin)
 
         # Real name
         elif " " in args:
-            yield self.__whois_real_name(name=args)
+            yield self.__whois_real_name(name=args, admin=from_tg.is_admin)
 
         elif args.startswith("@"):
             username = args.lstrip("@")
-            yield self.__whois_username(username=username)
+            yield self.__whois_username(username=username, admin=from_tg.is_admin)
 
         # TODO: Match telegram mentions
         # TODO: Match telegram name
@@ -354,7 +361,7 @@ class Dialog:
             "🚧 La funzionalità di ricerca tramite name-mention di Telegram non è ancora stata implementata."
         )
 
-    async def __whois_email(self, email_prefix: str):
+    async def __whois_email(self, email_prefix: str, admin: bool):
         """The /whois command, called with an email."""
         msg: telethon.tl.custom.Message = yield
 
@@ -363,9 +370,12 @@ class Dialog:
             await self.__message("⚠️ Nessuno studente trovato.")
             return
 
-        await self.__message(st.whois())
+        if admin:
+            await self.__message(st.whois_message())
+        else:
+            await self.__message(st.whois())
 
-    async def __whois_real_name(self, name: str) -> AsyncAdventure:
+    async def __whois_real_name(self, name: str, admin: bool) -> AsyncAdventure:
         """The /whois command, called with a first name and a last name."""
         msg: telethon.tl.custom.Message = yield
 
@@ -388,11 +398,14 @@ class Dialog:
         # There might be more than a student with the same name!
         response: List[str] = []
         for student in students:
-            response.append(student.whois())
+            if admin:
+                response.append(student.whois_message())
+            else:
+                response.append(student.whois())
 
         await self.__message("\n\n".join(response))
 
-    async def __whois_username(self, username: str) -> AsyncAdventure:
+    async def __whois_username(self, username: str, admin: bool) -> AsyncAdventure:
         """The /whois command, called with a Telegram username."""
         msg: telethon.tl.custom.Message = yield
 
@@ -401,4 +414,7 @@ class Dialog:
             await self.__message("⚠️ Nessuno studente trovato.")
             return
 
-        await self.__message(tg.st.whois())
+        if admin:
+            await self.__message(tg.st.whois_message())
+        else:
+            await self.__message(tg.st.whois())

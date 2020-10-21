@@ -20,6 +20,8 @@ class Telegram(Base):
     st_email_prefix = s.Column(s.String, s.ForeignKey("students.email_prefix"), nullable=False)
     st = o.relationship("Student", back_populates="tg", uselist=False)
 
+    is_admin = s.Column(s.Boolean, nullable=False, default=False, server_default="FALSE")
+
     def __repr__(self):
         return f"{self.__qualname__}({self.id=}, {self.first_name=}, {self.last_name=}, {self.username=}, " \
                f"{self.st_email_prefix=})"
