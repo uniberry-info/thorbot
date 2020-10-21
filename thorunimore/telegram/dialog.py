@@ -370,7 +370,7 @@ class Dialog:
             await self.__message("⚠️ Nessuno studente trovato.")
             return
 
-        if admin:
+        if admin and msg.is_private:
             await self.__message(st.whois_message())
         else:
             await self.__message(st.whois())
@@ -398,7 +398,7 @@ class Dialog:
         # There might be more than a student with the same name!
         response: List[str] = []
         for student in students:
-            if admin:
+            if admin and msg.is_private:
                 response.append(student.whois_message())
             else:
                 response.append(student.whois())
@@ -414,7 +414,7 @@ class Dialog:
             await self.__message("⚠️ Nessuno studente trovato.")
             return
 
-        if admin:
+        if admin and msg.is_private:
             await self.__message(tg.st.whois_message())
         else:
             await self.__message(tg.st.whois())
