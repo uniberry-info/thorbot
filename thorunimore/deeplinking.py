@@ -10,10 +10,10 @@ class DeepLinking:
 
     def encode(self, value: Any) -> str:
         signed = self.serializer.dumps(value)
-        signed = signed.replace("_", "__").replace(".", "_d")
+        signed = signed.replace("_", "_u").replace(".", "_d")
         return signed
 
     def decode(self, signed: str) -> Any:
-        signed = signed.replace("_d", ".").replace("__", "_")
+        signed = signed.replace("_d", ".").replace("_u", "_")
         value = self.serializer.loads(signed)
         return value
