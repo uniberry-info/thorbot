@@ -206,7 +206,7 @@ class Dialog:
 
     async def __normal_start(self) -> AsyncAdventure:
         """The /start command, called without arguments."""
-        msg: telethon.tl.custom.Message = yield
+        _: telethon.tl.custom.Message = yield
 
         await self.__message(
             f'👋 Ciao! Sono Thor, il bot-moderatore di Unimore Informatica.\n'
@@ -219,7 +219,7 @@ class Dialog:
 
     async def __deeplink_start(self, payload: str) -> AsyncAdventure:
         """The /start command, called with deep-linked arguments."""
-        msg: telethon.tl.custom.Message = yield
+        _: telethon.tl.custom.Message = yield
 
         try:
             opcode, data = dl.decode(payload)
@@ -245,7 +245,6 @@ class Dialog:
 
         from_user = await msg.get_sender()
 
-        tg: Telegram = self.session.query(Telegram).filter_by(id=from_user.id).one_or_none()
         st: Student = self.session.query(Student).filter_by(email_prefix=email_prefix).one()
 
         # Ask for confirmation
@@ -324,7 +323,7 @@ class Dialog:
         """The /whois command, used to fetch information about a certain student or Telegram account."""
         msg: telethon.tl.custom.Message = yield
 
-        cmd, *args = msg.message.split(" ", 1)
+        _, *args = msg.message.split(" ", 1)
         args = " ".join(args)
 
         from_user = await msg.get_sender()
