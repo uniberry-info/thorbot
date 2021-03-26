@@ -344,22 +344,30 @@ class Dialog:
         elif " " in args:
             yield self.__whois_real_name(name=args, admin=from_tg.is_admin)
 
+        # Telegram username
         elif args.startswith("@"):
             username = args.lstrip("@")
             yield self.__whois_username(username=username, admin=from_tg.is_admin)
 
-        # TODO: Match telegram mentions
-        # TODO: Match telegram name
+        # Telegram id
+        elif args.startswith("tg:"):
+            _, tg_id = args.split(":", 1)
+            try:
+                tg_id = int(tg_id)
+            except ValueError:
+                await self.__message("⚠️ L'ID Telegram che hai specificato non sembra essere valido.")
+                return
+            else:
+                yield self.__whois_tg_id(tg_id=tg_id, admin=from_tg.is_admin)
 
         await self.__message(
             "⚠️ Non hai specificato correttamente cosa cercare.\n"
             "\n"
-            "Puoi specificare un'username Telegram, un nome e cognome o un'email.\n"
+            "Puoi specificare un'username o un id Telegram, un nome e cognome o un'email.\n"
             "<code>/whois Stefano Pigozzi</code>\n"
             "<code>/whois @Steffo</code>\n"
-            "<code>/whois 256895@studenti.unimore.it</code>\n"
-            "\n"
-            "🚧 La funzionalità di ricerca tramite name-mention di Telegram non è ancora stata implementata."
+            "<code>/whois tg:25167391</code>\n"
+            "<code>/whois 256895@studenti.unimore.it</code>"
         )
 
     async def __whois_email(self, email_prefix: str, admin: bool):
@@ -411,6 +419,20 @@ class Dialog:
         msg: telethon.tl.custom.Message = yield
 
         tg: Optional[Telegram] = self.session.query(Telegram).filter_by(username=username).one_or_none()
+        if tg is None:
+            await self.__message("⚠️ Nessuno studente trovato.")
+            return
+
+        if admin and msg.is_private:
+            await self.__message(tg.st.whois_message())
+        else:
+            await self.__message(tg.st.whois())
+
+    async def __whois_tg_id(self, tg_id: int, admin: bool) -> AsyncAdventure:
+        """The /whois command, called with a Telegram id."""
+        msg: telethon.tl.custom.Message = yield
+
+        tg: Optional[Telegram] = self.session.query(Telegram).get(tg_id)
         if tg is None:
             await self.__message("⚠️ Nessuno studente trovato.")
             return
