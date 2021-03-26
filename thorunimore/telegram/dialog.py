@@ -260,11 +260,12 @@ class Dialog:
 
         # Ask for privacy mode
         choice = yield Keyboard(
-            message="📝 Vuoi permettere agli altri studenti verificati di visualizzare il tuo <b>vero nome</b> e la tua "
-                    "<b>email istituzionale</b> attraverso il comando /whois?\n\n"
+            message="📝 Vuoi permettere agli altri studenti verificati di associare il tuo <b>vero nome</b> e la tua "
+                    "<b>email istituzionale</b> al tuo <b>account Telegram</b>?"
+                    "\n\n"
                     "(Gli amministratori del gruppo vi avranno comunque accesso, e potrai cambiare idea in qualsiasi "
                     "momento con il comando /settings.)",
-            choices=[["👤 Nascondi.", "📱 Mostra!"]]
+            choices=[["👤 Nascondi.", "📱 Mostra!"]],
         )
         st.privacy = choice.message == "👤 Nascondi."
 
@@ -305,8 +306,9 @@ class Dialog:
 
         # Ask for privacy mode
         choice = yield Keyboard(
-            message="📝 Vuoi permettere agli altri studenti verificati di visualizzare il tuo <b>vero nome</b> e la tua "
-                    "<b>email istituzionale</b> attraverso il comando /whois?\n\n"
+            message="📝 Vuoi permettere agli altri studenti verificati di associare il tuo <b>vero nome</b> e la tua "
+                    "<b>email istituzionale</b> al tuo <b>account Telegram</b>?"
+                    "\n\n"
                     "(Gli amministratori del gruppo vi avranno comunque accesso, e potrai cambiare idea in qualsiasi "
                     "momento con il comando /settings.)",
             choices=[["👤 Nascondi.", "📱 Mostra!"]],
