@@ -7,11 +7,12 @@
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://localhost:5432/thor_dev</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="thor_prod@combo.steffo.eu" uuid="df44c125-3bc6-4056-a94c-b3c5ce7e8e39">
-      <driver-ref>postgresql</driver-ref>
+    <data-source source="LOCAL" name="bot" uuid="041d4840-0331-4c08-bcce-01a66e276408">
+      <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://combo.steffo.eu:5432/thor_prod</jdbc-url>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/bot.session</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
 </project>
