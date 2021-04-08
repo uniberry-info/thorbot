@@ -8,7 +8,7 @@ import flask_sqlalchemy
 import werkzeug.middleware.proxy_fix
 from royalnet.typing import *
 
-from ..database import Student
+from ..database import Student, Token, Telegram
 from ..database.base import Base
 from ..deeplinking import DeepLinking
 
@@ -20,6 +20,7 @@ app.config.update(**os.environ)
 reverse_proxy_app = werkzeug.middleware.proxy_fix.ProxyFix(app=app, x_for=1, x_proto=0, x_host=1, x_port=0, x_prefix=0)
 
 db = flask_sqlalchemy.SQLAlchemy(app=app, metadata=Base.metadata)
+db.create_all()
 
 oauth = authlib.integrations.flask_client.OAuth(app=app)
 oauth.register(
@@ -106,6 +107,42 @@ def page_privacy():
     return flask.render_template("privacy.html")
 
 
+@app.route("/api/<token>/whois/<int:tg_id>")
+def api_whois(token: str, tg_id: int):
+    token = db.session.query(Token).filter_by(token=token).one_or_none()
+    if token is None:
+        return flask.jsonify({
+            "description": "Invalid token",
+        }), 403
+
+    tg = db.session.query(Telegram).filter_by(id=tg_id).one_or_none()
+    if tg is None:
+        return flask.jsonify({
+            "description": "User was not found in Thor's database",
+            "found": False,
+        }), 404
+
+    if tg.st.privacy:
+        return flask.jsonify({
+            "description": "User has a private profile in Thor's database",
+            "found": True,
+        }), 200
+
+    return flask.jsonify({
+        "description": "User has a public profile in Thor's database",
+        "found": True,
+        "tg": {
+            "first_name": tg.first_name,
+            "last_name": tg.last_name,
+            "username": tg.username,
+        },
+        "st": {
+            "email": f"{tg.st.email_prefix}@studenti.unimore.it",
+            "first_name": tg.st.first_name,
+            "last_name": tg.st.last_name,
+        }
+    }), 200
+
+
 if __name__ == "__main__":
-    db.create_all()
     app.run()
