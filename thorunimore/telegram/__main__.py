@@ -32,7 +32,7 @@ client = telethon.client.TelegramClient("bot", int(os.environ["TELEGRAM_API_ID"]
 async def main():
     logging.root.setLevel(os.environ["LOG_LEVEL"])
     stream_handler = logging.StreamHandler()
-    stream_handler.formatter = coloredlogs.ColoredFormatter(os.environ["LOG_FORMAT"].replace("\\t", "\t"), style="{")
+    stream_handler.formatter = coloredlogs.ColoredFormatter("{asctime:>19} | {name:<24} | {levelname:>7} | {message}", style="{")
     logging.root.addHandler(stream_handler)
     log.debug("Logging setup successfully!")
 
