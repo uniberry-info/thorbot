@@ -120,8 +120,8 @@ async def main():
                         "L'errore è stato salvato nei log del server.")
 
     while True:
-        log.info(f"Catching up...")
-        await bot.catch_up()
+        # log.info(f"Catching up...")
+        # await bot.catch_up()
 
         log.info(f"Running!")
         # noinspection PyProtectedMember
