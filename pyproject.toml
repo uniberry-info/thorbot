@@ -6,7 +6,7 @@ authors = ["Stefano Pigozzi <ste.pigozzi@gmail.com>"]
 license = "AGPL-3.0-or-later"
 
 [tool.poetry.dependencies]
-python = "3.8"
+python = "~3.8"
 royalnet = "6.0.0a4"
 telethon = "^1.16.4"
 cryptg = {version = "^0.2.post1", optional = true}
