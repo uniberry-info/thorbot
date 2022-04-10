@@ -10,6 +10,7 @@ COPY pyproject.toml ./pyproject.toml
 COPY poetry.lock ./poetry.lock
 RUN poetry install --no-root --no-dev
 RUN pip install gunicorn
+RUN pip install psycopg2
 
 FROM dependencies AS package
 COPY . .
