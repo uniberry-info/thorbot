@@ -9,6 +9,7 @@ FROM poetry AS dependencies
 COPY pyproject.toml ./pyproject.toml
 COPY poetry.lock ./poetry.lock
 RUN poetry install --no-root --no-dev
+RUN pip install gunicorn
 
 FROM dependencies AS package
 COPY . .
@@ -21,4 +22,4 @@ FROM environment AS telegram
 ENTRYPOINT ["poetry", "run", "python", "-m", "impressive_strawberry.telegram"]
 
 FROM environment AS web
-ENTRYPOINT ["poetry", "run", "python", "-m", "impressive_strawberry.web"]
+ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:80", "impressive_strawberry.web.__main__:reverse_proxy_app"]
