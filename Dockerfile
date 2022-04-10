@@ -21,4 +21,4 @@ FROM environment AS telegram
 ENTRYPOINT ["poetry", "run", "python", "-m", "thorunimore.telegram"]
 
 FROM environment AS web
-ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:80", "thorunimore.web.__main__:reverse_proxy_app"]
+ENTRYPOINT ["poetry", "run", "gunicorn", "-b", "0.0.0.0:80", "thorunimore.web.__main__:reverse_proxy_app"]
