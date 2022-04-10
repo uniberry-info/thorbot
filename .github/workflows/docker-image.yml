@@ -32,13 +32,26 @@ jobs:
           username: RYGhub
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: "🏗 Build and push the Docker image"
+      - name: "🏗 Build and push the Docker image for thorunimore.telegram"
         uses: docker/build-push-action@v2
         with:
+          target: "telegram"
           tags: >-
-            ghcr.io/steffo99/thorunimore:${{ steps.semver.outputs.full }},
-            ghcr.io/steffo99/thorunimore:${{ steps.semver.outputs.patch }},
-            ghcr.io/steffo99/thorunimore:${{ steps.semver.outputs.minor }},
-            ghcr.io/steffo99/thorunimore:${{ steps.semver.outputs.major }},
-            ghcr.io/steffo99/thorunimore:latest
+            ghcr.io/steffo99/thorunimore-telegram:${{ steps.semver.outputs.full }},
+            ghcr.io/steffo99/thorunimore-telegram:${{ steps.semver.outputs.patch }},
+            ghcr.io/steffo99/thorunimore-telegram:${{ steps.semver.outputs.minor }},
+            ghcr.io/steffo99/thorunimore-telegram:${{ steps.semver.outputs.major }},
+            ghcr.io/steffo99/thorunimore-telegram:latest
+          push: true
+
+      - name: "🏗 Build and push the Docker image for thorunimore.web"
+        uses: docker/build-push-action@v2
+        with:
+          target: "web"
+          tags: >-
+            ghcr.io/steffo99/thorunimore-web:${{ steps.semver.outputs.full }},
+            ghcr.io/steffo99/thorunimore-web:${{ steps.semver.outputs.patch }},
+            ghcr.io/steffo99/thorunimore-web:${{ steps.semver.outputs.minor }},
+            ghcr.io/steffo99/thorunimore-web:${{ steps.semver.outputs.major }},
+            ghcr.io/steffo99/thorunimore-web:latest
           push: true
