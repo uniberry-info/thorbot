@@ -114,16 +114,22 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: "🔽 Find the lowercase name of the repository"
+        id: reponame
+        uses: ASzc/change-string-case-action@v2
+        with: 
+          string: ${{ github.repository }}
+
       - name: "🏗 Build and push the Docker image for thorunimore.telegram"
         uses: docker/build-push-action@v2
         with:
           target: "telegram"
           tags: >-
-            ghcr.io/${{ github.repository }}-telegram:${{ steps.semver.outputs.precedence }},
-            ghcr.io/${{ github.repository }}-telegram:${{ steps.semver.outputs.core }},
-            ghcr.io/${{ github.repository }}-telegram:${{ steps.semver.outputs.pair }},
-            ghcr.io/${{ github.repository }}-telegram:${{ steps.semver.outputs.major }},
-            ghcr.io/${{ github.repository }}-telegram:latest
+            ghcr.io/${{ steps.reponame.outputs.lowercase }}-telegram:${{ steps.semver.outputs.precedence }},
+            ghcr.io/${{ steps.reponame.outputs.lowercase }}-telegram:${{ steps.semver.outputs.core }},
+            ghcr.io/${{ steps.reponame.outputs.lowercase }}-telegram:${{ steps.semver.outputs.pair }},
+            ghcr.io/${{ steps.reponame.outputs.lowercase }}-telegram:${{ steps.semver.outputs.major }},
+            ghcr.io/${{ steps.reponame.outputs.lowercase }}-telegram:latest
           push: true
 
       - name: "🏗 Build and push the Docker image for thorunimore.web"
@@ -131,9 +137,9 @@ jobs:
         with:
           target: "web"
           tags: >-
-            ghcr.io/${{ github.repository }}-web:${{ steps.semver.outputs.precedence }},
-            ghcr.io/${{ github.repository }}-web:${{ steps.semver.outputs.core }},
-            ghcr.io/${{ github.repository }}-web:${{ steps.semver.outputs.pair }},
-            ghcr.io/${{ github.repository }}-web:${{ steps.semver.outputs.major }},
-            ghcr.io/${{ github.repository }}-web:latest
+            ghcr.io/${{ steps.reponame.outputs.lowercase }}-web:${{ steps.semver.outputs.precedence }},
+            ghcr.io/${{ steps.reponame.outputs.lowercase }}-web:${{ steps.semver.outputs.core }},
+            ghcr.io/${{ steps.reponame.outputs.lowercase }}-web:${{ steps.semver.outputs.pair }},
+            ghcr.io/${{ steps.reponame.outputs.lowercase }}-web:${{ steps.semver.outputs.major }},
+            ghcr.io/${{ steps.reponame.outputs.lowercase }}-web:latest
           push: true
