@@ -1,9 +1,11 @@
 FROM python:3.8 AS metadata
 LABEL maintainer="Stefano Pigozzi <me@steffo.eu>"
+
+FROM metadata AS workdir
 WORKDIR /usr/src/thorunimore
 
-FROM metadata AS poetry
-RUN pip install "poetry==1.1.12"
+FROM workdir AS poetry
+RUN pip install "poetry"
 
 FROM poetry AS dependencies
 COPY pyproject.toml ./pyproject.toml
@@ -19,6 +21,8 @@ ENV PYTHONUNBUFFERED=1
 
 FROM environment AS telegram
 ENTRYPOINT ["poetry", "run", "python", "-m", "thorunimore.telegram"]
+CMD []
 
 FROM environment AS web
 ENTRYPOINT ["poetry", "run", "gunicorn", "-b", "0.0.0.0:80", "thorunimore.web.__main__:reverse_proxy_app"]
+CMD []

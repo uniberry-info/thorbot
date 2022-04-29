@@ -1,0 +1,139 @@
+name: "Automated release"
+
+on:
+  push: 
+    tags:
+      - "v*"
+
+
+defaults:
+  run:
+    shell: bash
+
+
+jobs:
+  tests:
+    uses: "./.github/workflows/tests.yml"
+  
+  build-package:
+    name: "📦 Build Python package"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "⬇️ Checkout repository"
+        uses: actions/checkout@v3
+
+      - name: "🔨 Setup Python"
+        uses: actions/setup-python@v3
+
+      - name: "🔨 Setup Poetry"
+        uses: abatilo/actions-poetry@v2.1.4
+
+      - name: "🔨 Setup Poetry Python environment"
+        uses: Steffo99/actions-poetry-deps@v0.2.4
+
+      - name: "🏗 Build package with Poetry"
+        run: poetry build --no-interaction
+    
+      - name: "⬆️ Upload code package to artifacts"
+        uses: actions/upload-artifact@v3
+        with:
+          name: "Build"
+          path: dist/*.tar.gz
+          if-no-files-found: error
+
+      - name: "⬆️ Upload wheel package to artifacts"
+        uses: actions/upload-artifact@v3
+        with:
+          name: "Build"
+          path: dist/*.whl
+          if-no-files-found: warn
+
+  publish-github:
+    name: "🌐 Publish release on GitHub"
+    needs:
+      - "tests"
+      - "build-package"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "⬇️ Download built packages from artifacts"
+        uses: actions/download-artifact@v3
+        with:
+          name: "Build"
+          path: dist/
+
+      - name: "🌐 Create release"
+        uses: ncipollo/release-action@v1.10.0
+        with:
+          artifactErrorsFailBuild: true
+          artifacts: dist/*
+          draft: true
+          generateReleaseNotes: true
+
+  publish-pypi:
+    name: "🌐 Publish release on PyPI"
+    needs:
+      - "tests"
+      - "build-package"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "⬇️ Download built packages from artifacts"
+        uses: actions/download-artifact@v3
+        with:
+          name: "Build"
+          path: dist/
+
+      - name: "🌐 Upload package"
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: "__token__"
+          password: ${{ secrets.PYPI_TOKEN }}
+
+  publish-docker:
+    name: "🐳 Build and publish Docker image on ghcr.io"
+    runs-on: ubuntu-latest
+    needs:
+      - "tests"
+      - "build-package"
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v2
+
+      - name: "❓ Find the release semantic version"
+        id: semver
+        uses: Steffo99/actions-semver@v0.3.0
+
+      - name: "🔨 Setup Buildx"
+        uses: docker/setup-buildx-action@v1
+
+      - name: "🔑 Login to GitHub Containers"
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "🏗 Build and push the Docker image for thorunimore.telegram"
+        uses: docker/build-push-action@v2
+        with:
+          target: "telegram"
+          tags: >-
+            ghcr.io/${{ github.repository }}-telegram:${{ steps.semver.outputs.full }},
+            ghcr.io/${{ github.repository }}-telegram:${{ steps.semver.outputs.precedence }},
+            ghcr.io/${{ github.repository }}-telegram:${{ steps.semver.outputs.core }},
+            ghcr.io/${{ github.repository }}-telegram:${{ steps.semver.outputs.pair }},
+            ghcr.io/${{ github.repository }}-telegram:${{ steps.semver.outputs.major }},
+            ghcr.io/${{ github.repository }}-telegram:latest
+          push: true
+
+      - name: "🏗 Build and push the Docker image for thorunimore.web"
+        uses: docker/build-push-action@v2
+        with:
+          target: "web"
+          tags: >-
+            ghcr.io/${{ github.repository }}-web:${{ steps.semver.outputs.full }},
+            ghcr.io/${{ github.repository }}-web:${{ steps.semver.outputs.precedence }},
+            ghcr.io/${{ github.repository }}-web:${{ steps.semver.outputs.core }},
+            ghcr.io/${{ github.repository }}-web:${{ steps.semver.outputs.pair }},
+            ghcr.io/${{ github.repository }}-web:${{ steps.semver.outputs.major }},
+            ghcr.io/${{ github.repository }}-web:latest
+          push: true

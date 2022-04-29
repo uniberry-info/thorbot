@@ -1,0 +1,43 @@
+name: "Test suite"
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_call:
+
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  syntax:
+    name: "🧪 Check the package's syntax"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "⬇️ Checkout repository"
+        uses: actions/checkout@v3
+
+      - name: "🔨 Setup Python"
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+
+      - name: "🔨 Setup Poetry"
+        uses: abatilo/actions-poetry@v2.1.4
+
+      - name: "🔨 Setup Poetry Python environment"
+        id: pyenv
+        uses: Steffo99/actions-poetry-deps@v0.2.4
+
+      - name: "🧪 Run check"
+        run: |
+          source ${{ steps.pyenv.outputs.pyenv }}/activate
+          python -m compileall thorunimore
