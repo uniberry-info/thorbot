@@ -119,7 +119,6 @@ jobs:
         with:
           target: "telegram"
           tags: >-
-            ghcr.io/${{ github.repository }}-telegram:${{ steps.semver.outputs.full }},
             ghcr.io/${{ github.repository }}-telegram:${{ steps.semver.outputs.precedence }},
             ghcr.io/${{ github.repository }}-telegram:${{ steps.semver.outputs.core }},
             ghcr.io/${{ github.repository }}-telegram:${{ steps.semver.outputs.pair }},
@@ -132,7 +131,6 @@ jobs:
         with:
           target: "web"
           tags: >-
-            ghcr.io/${{ github.repository }}-web:${{ steps.semver.outputs.full }},
             ghcr.io/${{ github.repository }}-web:${{ steps.semver.outputs.precedence }},
             ghcr.io/${{ github.repository }}-web:${{ steps.semver.outputs.core }},
             ghcr.io/${{ github.repository }}-web:${{ steps.semver.outputs.pair }},
