@@ -101,6 +101,8 @@ jobs:
       - name: "❓ Find the release semantic version"
         id: semver
         uses: Steffo99/actions-semver@v0.3.0
+        with:
+          string: ${{ github.ref_name }}
 
       - name: "🔨 Setup Buildx"
         uses: docker/setup-buildx-action@v1
