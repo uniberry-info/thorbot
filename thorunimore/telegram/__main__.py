@@ -29,7 +29,7 @@ log.debug("Creating telethon TelegramClient...")
 client = telethon.client.TelegramClient("bot", int(os.environ["TELEGRAM_API_ID"]), os.environ["TELEGRAM_API_HASH"])
 
 
-async def main():
+async def run():
     logging.root.setLevel(os.environ["LOG_LEVEL"])
     stream_handler = logging.StreamHandler()
     stream_handler.formatter = coloredlogs.ColoredFormatter("{asctime:>19} | {name:<24} | {levelname:>7} | {message}", style="{")
@@ -131,5 +131,9 @@ async def main():
         await asyncio.sleep(60)
 
 
+def main():
+    asyncio.get_event_loop().run_until_complete(run())
+
+
 if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(main())
+    main()

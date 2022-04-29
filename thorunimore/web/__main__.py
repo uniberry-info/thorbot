@@ -144,5 +144,9 @@ def api_whois(token: str, tg_id: int):
     }), 200
 
 
-if __name__ == "__main__":
+def main():
     app.run()
+
+
+if __name__ == "__main__":
+    main()
