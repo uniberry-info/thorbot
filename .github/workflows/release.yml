@@ -121,7 +121,7 @@ jobs:
           string: ${{ github.repository }}
 
       - name: "🏗 Build and push the Docker image for thorunimore.telegram"
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           target: "telegram"
           tags: >-
@@ -133,7 +133,7 @@ jobs:
           push: true
 
       - name: "🏗 Build and push the Docker image for thorunimore.web"
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           target: "web"
           tags: >-
