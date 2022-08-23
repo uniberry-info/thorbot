@@ -31,7 +31,7 @@ jobs:
           python-version: '3.8'
 
       - name: "🔨 Setup Poetry"
-        uses: abatilo/actions-poetry@v2.1.5
+        uses: abatilo/actions-poetry@v2.1.6
 
       - name: "🔨 Setup Poetry Python environment"
         id: pyenv
