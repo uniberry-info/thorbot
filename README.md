@@ -196,7 +196,7 @@ This section assumes the project's files are located in `/opt/thorunimore`.
     # a2ensite rp-thorunimore
     ```
 
-### Installation via Docker
+## Installation via Docker
 
 This method is recommended for production deployments.
 
