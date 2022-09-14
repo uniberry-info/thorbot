@@ -1,93 +1,114 @@
-# thorunimore
+# Thor Bot
 
-![](resources/bot_image.png)
+Gatekeeper bot for the Unimore Informatica unofficial Telegram group network
 
-A moderator bot for the Unimore Informatica group
+\[ [**Website**](https://thor.steffo.eu) | [PyPI](https://pypi.org/project/thorunimore/) \]
 
-## Installation
+> NOTE: This bot will be replaced soon with its rewrite, [Loki Bot](https://github.com/Steffo99/lokiunimore). Development on this version has ceased.
+
+![The OpenGraph image of this page, with the project logo in the foreground and a blurred version of the Thor website in the background.](resources/opengraph.png)
+
+## Functionality
+
+If added as an administrator to a Telegram group, this bot will instantly kick any joining member who hasn't passed verification.
+
+Verification is performed by:
+
+1. visiting the bot's homepage
+2. pressing the "Verify" button
+3. logging in via Google with a `@studenti.unimore.it` account
+4. following the deep link to Telegram
+5. pressing the "Start" button in the bot chat
+6. answering the few questions the bot asks about the user's configuration
+
+Additionally, verified users of the bot may choose to make their real name available for lookups via a bot command.
+
+Verified members joining a monitored group which made their real name available are announced by the bot in the group.
+
+## Installation via PyPI
+
+This method is recommended only for development purposes.
 
 1. Create a new venv and enter it:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate
+   ```console
+   $ python -m venv venv
+   $ source venv/bin/activate
    ```
    
 2. Download through PyPI:
-   ```bash
-   pip install thorunimore
+   ```console
+   $ pip install thorunimore
    ```
    
 3. Install the packages required to connect to the desired SQL database:
    
    - For PostgreSQL:
-     ```bash
-     pip install psycopg2-binary
+     ```console
+     $ pip install psycopg2-binary
      ```
 
-## Running
-
-### Development
-
-1. Set the following env variables:
+4. Set the following environment variables:
 
    - [The URI of the SQL database you want to use](https://docs.sqlalchemy.org/en/13/core/engines.html)
      ```bash
-     SQLALCHEMY_DATABASE_URI=postgresql://steffo@/thor_dev
+     export SQLALCHEMY_DATABASE_URI="postgresql://steffo@/thor_dev"
      ```
    
    - [A Google OAuth 2.0 client id and client secret](https://console.developers.google.com/apis/credentials)
      ```bash
-     GOOGLE_CLIENT_ID=000000000000-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.apps.googleusercontent.com
-     GOOGLE_CLIENT_SECRET=aaaaaaaaaaaaaaaaaaaaaaaa
+     export GOOGLE_CLIENT_ID="000000000000-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.apps.googleusercontent.com"
+     export GOOGLE_CLIENT_SECRET="aaaaaaaaaaaaaaaaaaaaaaaa"
      ```
    
    - A random string of characters used to sign Telegram data
      ```bash
-     SECRET_KEY=Questo è proprio un bel test.
+     export SECRET_KEY="Questo è proprio un bel test."
      ```
    
    - [api_id and api_hash for a Telegram application](https://my.telegram.org/apps)
      ```bash
-     TELEGRAM_API_ID=1234567
-     TELEGRAM_API_HASH=abcdefabcdefabcdefabcdefabcdefab
+     export TELEGRAM_API_ID="1234567"
+     export TELEGRAM_API_HASH="abcdefabcdefabcdefabcdefabcdefab"
      ```
 
    - [The username and token of the Telegram bot](https://t.me/BotFather)
      ```bash
-     TELEGRAM_BOT_USERNAME=thorunimorebot
-     TELEGRAM_BOT_TOKEN=1111111111:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+     export TELEGRAM_BOT_USERNAME="thorunimorebot"
+     export TELEGRAM_BOT_TOKEN="1111111111:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
      ```
 
    - The desired logging level and format
      ```bash
-     LOG_LEVEL=DEBUG
-     LOG_FORMAT={asctime}\t| {name}\t| {message}
+     export LOG_LEVEL="DEBUG"
+     export LOG_FORMAT="{asctime}\t| {name}\t| {message}"
      ```
    
    - The url at which web is hosted
      ```bash
-     BASE_URL=http://lo.steffo.eu:30008
+     export BASE_URL="http://lo.steffo.eu:30008"
      ```
      
    - The url to join the Telegram group
      ```bash
-     GROUP_URL=https://t.me/joinchat/AAAAAAAAAAAAAAAAAAAAAA
+     export GROUP_URL="https://t.me/joinchat/AAAAAAAAAAAAAAAAAAAAAA"
      ```
 
-2. Run both the following processes:
-   ```bash
-   python -m thorunimore.telegram &
-   python -m thorunimore.web &
+5. Run both of the project's processes simultaneously:
+   ```console
+   $ python -m thorunimore.telegram &
+   $ python -m thorunimore.web &
    ```
 
-### Production
+### Configuring as a SystemD unit
 
-1. Install `gunicorn` in the previously created venv:
-   ```
-   pip install gunicorn
+This section assumes the project's files are located in `/opt/thorunimore`.
+
+6. Install `gunicorn` in the previously created venv:
+   ```console
+   $ pip install gunicorn
    ```
 
-2. Create the `bot-thorunimore` systemd unit by creating the `/etc/systemd/system/bot-thorunimore.service` file:
+7. Create the `bot-thorunimore` systemd unit by creating the `/etc/systemd/system/bot-thorunimore.service` file:
    ```ini
    [Unit]
    Name=bot-thorunimore
@@ -106,7 +127,7 @@ A moderator bot for the Unimore Informatica group
    WantedBy=multi-user.target
    ```
 
-3. Create the `web-thorunimore` systemd unit by creating the `/etc/systemd/system/web-thorunimore.service` file:
+8. Create the `web-thorunimore` systemd unit by creating the `/etc/systemd/system/web-thorunimore.service` file:
    ```ini
    [Unit]
    Name=web-thorunimore
@@ -124,8 +145,8 @@ A moderator bot for the Unimore Informatica group
    WantedBy=multi-user.target
    ```
    
-4. Create the `/etc/systemd/system/bot-thorunimore.d/override.conf` and 
-   `/etc/systemd/system/web-thorunimore.d/override.conf` files:
+9. Create the `/etc/systemd/system/bot-thorunimore.d/override.conf` and 
+   `/etc/systemd/system/web-thorunimore.d/override.conf` containing the previously configured variables, so that they are passed to the SystemD unit:
    ```ini
    [Service]
    Environment="SQLALCHEMY_DATABASE_URI=postgresql://thorunimore@/thor_prod"
@@ -142,35 +163,41 @@ A moderator bot for the Unimore Informatica group
    Environment="GROUP_URL=https://t.me/joinchat/AAAAAAAAAAAAAAAAAAAAAA"
    ```
    
-5. Start (and optionally enable) both services:
-   ```bash
-   systemctl start "*-thorunimore"
-   systemctl enable "*-thorunimore"
-   ```
+10. Start (and optionally enable) both services:
+    ```console
+    # systemctl start "bot-thorunimore" "web-thorunimore"
+    # systemctl enable "bot-thorunimore" "web-thorunimore"
+    ```
 
-6. Reverse-proxy the web service:
-   ```
-   <VirtualHost *:80>
-   
-   ServerName "thor.steffo.eu"
-   Redirect permanent "/" "https://thor.steffo.eu/"
-   
-   </VirtualHost>
-   
-   <VirtualHost *:443>
-   
-   ServerName "thor.steffo.eu"
-   
-   ProxyPass "/" "http://127.0.0.1:30008/"
-   ProxyPassReverse "/" "http://127.0.0.1:30008/"
-   RequestHeader set "X-Forwarded-Proto" expr=%{REQUEST_SCHEME}
-   
-   SSLEngine on
-   SSLCertificateFile "/root/.acme.sh/*.steffo.eu/fullchain.cer"
-   SSLCertificateKeyFile "/root/.acme.sh/*.steffo.eu/*.steffo.eu.key"
-   
-   </VirtualHost>
-   ```
-   ```bash
-   a2ensite rp-thorunimore
-   ```
+11. Reverse-proxy the web service with a web server such as Apache HTTPd:
+    ```apacheconf
+    <VirtualHost *:80>
+    
+    ServerName "thor.steffo.eu"
+    Redirect permanent "/" "https://thor.steffo.eu/"
+    
+    </VirtualHost>
+    
+    <VirtualHost *:443>
+    
+    ServerName "thor.steffo.eu"
+    
+    ProxyPass "/" "http://127.0.0.1:30008/"
+    ProxyPassReverse "/" "http://127.0.0.1:30008/"
+    RequestHeader set "X-Forwarded-Proto" expr=%{REQUEST_SCHEME}
+    
+    SSLEngine on
+    SSLCertificateFile "/root/.acme.sh/*.steffo.eu/fullchain.cer"
+    SSLCertificateKeyFile "/root/.acme.sh/*.steffo.eu/*.steffo.eu.key"
+    
+    </VirtualHost>
+    ```
+    ```console
+    # a2ensite rp-thorunimore
+    ```
+
+### Installation via Docker
+
+This method is recommended for production deployments.
+
+- Two Docker images are provided, `thorunimore-web` and `thorunimore-telegram`, which only require configuration of the environment and setup of a reverse proxy.
