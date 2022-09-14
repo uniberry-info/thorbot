@@ -22,7 +22,7 @@ build-backend = "poetry.core.masonry.api"
 name = "thorunimore"
 
 # The version of the package.
-version = "1.2.12"
+version = "1.2.13"
 
 # A brief, one-sentence description about your project.
 description = "Authentication gateway bot for the Unimore Informatica Telegram group"
