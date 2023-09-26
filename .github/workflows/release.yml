@@ -116,7 +116,7 @@ jobs:
 
       - name: "🔽 Find the lowercase name of the repository"
         id: reponame
-        uses: ASzc/change-string-case-action@v2
+        uses: ASzc/change-string-case-action@v5
         with: 
           string: ${{ github.repository }}
 
